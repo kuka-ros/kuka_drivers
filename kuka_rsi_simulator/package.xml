@@ -4,6 +4,7 @@
   <name>kuka_rsi_simulator</name>
   <version>2.0.0</version>
   <description>Simple package for simulating the KUKA RSI interface</description>
+  <maintainer email="tamas.pepo@kuka.com">Tamas Pepo</maintainer>
   <maintainer email="aron.svastits@kuka.com">Aron Svastits</maintainer>
   <license>Apache-2.0</license>
 

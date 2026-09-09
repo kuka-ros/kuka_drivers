@@ -5,8 +5,8 @@
   <version>2.0.0</version>
   <description>Controller for setting the control mode of KUKA robots in runtime</description>
 
+  <maintainer email="tamas.pepo@kuka.com">Tamas Pepo</maintainer>
   <maintainer email="aron.svastits@kuka.com">Aron Svastits</maintainer>
-  <maintainer email="pepo.tamas@kuka.com">Tamas Pepo</maintainer>
 
   <license>Apache-2.0</license>
 

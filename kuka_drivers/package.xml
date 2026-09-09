@@ -3,8 +3,8 @@
   <name>kuka_drivers</name>
   <version>2.0.0</version>
   <description>ROS2 drivers for KUKA robots</description>
+  <maintainer email="tamas.pepo@kuka.com">Tamas Pepo</maintainer>
   <maintainer email="aron.svastits@kuka.com">Aron Svastits</maintainer>
-  <maintainer email="pepo.tamas@kuka.com">Tamas Pepo</maintainer>
   <license>Apache-2.0</license>
 
   <url type="bugtracker">https://github.com/kuka-ros/kuka_drivers/issues</url>

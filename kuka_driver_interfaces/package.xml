@@ -4,8 +4,8 @@
   <name>kuka_driver_interfaces</name>
   <version>2.0.0</version>
   <description>Message definitions necessary for using KUKA drivers</description>
+  <maintainer email="tamas.pepo@kuka.com">Tamas Pepo</maintainer>
   <maintainer email="aron.svastits@kuka.com">Aron Svastits</maintainer>
-  <maintainer email="pepo.tamas@kuka.com">Tamas Pepo</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
