@@ -4,8 +4,8 @@ This repository contains ROS2 drivers for all KUKA operating systems.
 
 ROS2 Distro | Branch | Github CI | SonarCloud
 ------------ | -------------- | -------------- | --------------
-**Jazzy** | [`master`](https://github.com/kroshu/kuka_drivers/tree/master) | [![Build Status](https://github.com/kroshu//kuka_drivers/actions/workflows/industrial_ci_jazzy.yml/badge.svg?branch=master)](https://github.com/kroshu/kuka_drivers/actions/workflows/industrial_ci_jazzy.yml?branch=master) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kroshu_kuka_drivers&metric=alert_status)](https://sonarcloud.io/dashboard?id=kroshu_kuka_drivers)
-**Humble** | [`humble`](https://github.com/kroshu/kuka_drivers/tree/humble) | [![Build Status](https://github.com/kroshu//kuka_drivers/actions/workflows/industrial_ci_humble.yml/badge.svg)](https://github.com/kroshu/kuka_drivers/actions/workflows/industrial_ci_humble.yml) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kroshu_kuka_drivers&metric=alert_status&branch=humble)](https://sonarcloud.io/dashboard?id=kroshu_kuka_drivers)
+**Jazzy** | [`master`](https://github.com/kuka-ros/kuka_drivers/tree/master) | [![Build Status](https://github.com/kuka-ros//kuka_drivers/actions/workflows/industrial_ci_jazzy.yml/badge.svg?branch=master)](https://github.com/kuka-ros/kuka_drivers/actions/workflows/industrial_ci_jazzy.yml?branch=master) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kuka-ros_kuka_drivers&metric=alert_status)](https://sonarcloud.io/dashboard?id=kuka-ros_kuka_drivers)
+**Humble** | [`humble`](https://github.com/kuka-ros/kuka_drivers/tree/humble) | [![Build Status](https://github.com/kuka-ros//kuka_drivers/actions/workflows/industrial_ci_humble.yml/badge.svg)](https://github.com/kuka-ros/kuka_drivers/actions/workflows/industrial_ci_humble.yml) | [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kuka-ros_kuka_drivers&metric=alert_status&branch=humble)](https://sonarcloud.io/dashboard?id=kuka-ros_kuka_drivers)
 
 ## Requirements
 
@@ -49,7 +49,7 @@ Clone KUKA ROS2 repositories.
 
 ```bash
 cd ~/ros2_ws/src
-git clone https://github.com/kroshu/kuka_drivers.git
+git clone https://github.com/kuka-ros/kuka_drivers.git
 vcs import < kuka_drivers/upstream.repos
 ```
 
@@ -93,6 +93,6 @@ source ~/ros2_ws/install/setup.bash
 
 ## Getting Started
 
-Documentation of this project can be found on the repository's [Wiki](https://github.com/kroshu/kuka_drivers/wiki) page.
+Documentation of this project can be found on the repository's [Wiki](https://github.com/kuka-ros/kuka_drivers/wiki) page.
 
 If you find something confusing, not working, or would like to contribute, please read our [contributing guide](CONTRIBUTING.md) before opening an issue or creating a pull request.

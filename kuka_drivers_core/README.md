@@ -8,7 +8,7 @@ The `kuka_drivers_core::communication_helpers` is a header-only library providin
 
 ### Synchronous service calls
 
-`rclcpp` does not provide synchronous service calls, this is implemented in the [`service_tools.hpp`](https://github.com/kroshu/kuka_drivers/blob/master/kuka_drivers_core/include/communication_helpers/service_tools.hpp)
+`rclcpp` does not provide synchronous service calls, this is implemented in the [`service_tools.hpp`](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/include/communication_helpers/service_tools.hpp)
 
 It provides the `sendRequest()` endpoint with following arguments:
 
@@ -32,7 +32,7 @@ auto response =  kuka_drivers_core::sendRequest<controller_manager_msgs::srv::Li
 
 ### `ros2_control` state handling
 
-The library also contains the [`ros2_control_tools.hpp`](https://github.com/kroshu/kuka_drivers/blob/master/kuka_drivers_core/include/communication_helpers/ros2_control_tools.hpp) header, which implements wrapper methods for modifying the states of controllers and hardware components.
+The library also contains the [`ros2_control_tools.hpp`](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/include/communication_helpers/ros2_control_tools.hpp) header, which implements wrapper methods for modifying the states of controllers and hardware components.
 
 **Endpoints:**
 
@@ -151,6 +151,6 @@ The `GetControllersForMode()` method returns the controllers needed for the requ
 
 ## Type definitions and modified control node
 
-Additionally common type definitions are included for control modes (see details on the [wiki](https://github.com/kroshu/kuka_drivers/wiki#control-mode-definitions)) and hardware interface types.
+Additionally common type definitions are included for control modes (see details on the [wiki](https://github.com/kuka-ros/kuka_drivers/wiki#control-mode-definitions)) and hardware interface types.
 
-The package also contains the [modified `control_node`](https://github.com/kroshu/kuka_drivers/wiki#real-time-interface) that instantiates the `controller_manager` without managing the timing.
+The package also contains the [modified `control_node`](https://github.com/kuka-ros/kuka_drivers/wiki#real-time-interface) that instantiates the `controller_manager` without managing the timing.

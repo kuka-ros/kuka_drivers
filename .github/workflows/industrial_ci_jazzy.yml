@@ -25,7 +25,7 @@ jobs:
       ROS_REPO: ros
       BUILDER: colcon
       TEST_COVERAGE: true
-      UPSTREAM_WORKSPACE: 'github:kroshu/kuka_robot_descriptions#master github:kroshu/kuka-external-control-sdk#master'
+      UPSTREAM_WORKSPACE: 'github:kuka-ros/kuka_robot_descriptions#master github:kuka-ros/kuka-external-control-sdk#master'
       ROS_DISTRO: jazzy
       CCACHE_DIR: /github/home/.ccache # Directory for ccache (and how we enable ccache in industrial_ci)
       EVENT_NAME: ${{ github.event_name }}

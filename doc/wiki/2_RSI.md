@@ -34,7 +34,7 @@ The following tables contain the exact versions used for testing the driver.
 
 ## Client-side setup
 
-It is recommended to run the driver on a real-time capable client machine. Detailed instructions for setting up the `PREEMPT_RT` path are available on the [Realtime](https://github.com/kroshu/kuka_drivers/wiki/5_Realtime) wiki page.
+It is recommended to run the driver on a real-time capable client machine. Detailed instructions for setting up the `PREEMPT_RT` path are available on the [Realtime](https://github.com/kuka-ros/kuka_drivers/wiki/5_Realtime) wiki page.
 
 To be able to connect to RSI running on the controller, a fixed IP in the subnet of the RSI interface is required on the Linux machine.
 
@@ -46,7 +46,7 @@ To set up the controller with WorkVisual/iiQWorks.Sim, a Windows machine is also
 
 Use the SDK setup guide for all KSS controller-side steps (network, file deployment, wrappers):
 
-- [External Control Setup for KSS](https://github.com/kroshu/kuka-external-control-sdk/blob/master/kuka_external_control_sdk/doc/kss_setup.md)
+- [External Control Setup for KSS](https://github.com/kuka-ros/kuka-external-control-sdk/blob/master/kuka_external_control_sdk/doc/kss_setup.md)
 
 Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available in this file.
 
@@ -54,7 +54,7 @@ Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available i
 
 Use the SDK setup guide for all iiQKA.OS2 controller-side steps (network, file deployment, wrappers):
 
-- [External Control Setup for iiQKA.OS2](https://github.com/kroshu/kuka-external-control-sdk/blob/master/kuka_external_control_sdk/doc/iiqka_os2_setup.md)
+- [External Control Setup for iiQKA.OS2](https://github.com/kuka-ros/kuka-external-control-sdk/blob/master/kuka_external_control_sdk/doc/iiqka_os2_setup.md)
 
 Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available in this file.
 
@@ -273,9 +273,9 @@ Upload the generated file to the controller as described in [Update and upload c
     ros2 launch kuka_rsi_driver startup.launch.py
     ```
 
-    - This starts the 3 core components of every driver (described in the [Non-real-time interface](https://github.com/kroshu/kuka_drivers/wiki#non-real-time-interface) section of the project overview) and the following controllers:
+    - This starts the 3 core components of every driver (described in the [Non-real-time interface](https://github.com/kuka-ros/kuka_drivers/wiki#non-real-time-interface) section of the project overview) and the following controllers:
       - `joint_state_broadcaster` (no configuration file, all state interfaces are published)
-      - `joint_trajectory_controller` ([configuration file](https://github.com/kroshu/kuka_drivers/tree/master/kuka_rsi_driver/config/joint_trajectory_controller_config.yaml))
+      - `joint_trajectory_controller` ([configuration file](https://github.com/kuka-ros/kuka_drivers/tree/master/kuka_rsi_driver/config/joint_trajectory_controller_config.yaml))
     - There is no need to set the Client IP, since the driver automatically listens on the `0.0.0.0` address.
     - After successful startup, the `robot_manager` node has to be activated to start the cyclic communication with the robot controller, see further steps (before this only a collapsed robot is visible in `rviz`):
 
@@ -294,7 +294,7 @@ Upload the generated file to the controller as described in [Update and upload c
   - `eki_rsi` or `mxa_rsi`: RSI program is automatically selected and started
 
 
-On successful activation the brakes of the robot will be released and external control is started. To test moving the robot, the `rqt_joint_trajectory_controller` is not recommended, use the launch file in the `moveit_example` package instead (found in examples repo, usage is described in the [Additional packages](https://github.com/kroshu/kuka_drivers/wiki#moveit-integration) section of the project overview).
+On successful activation the brakes of the robot will be released and external control is started. To test moving the robot, the `rqt_joint_trajectory_controller` is not recommended, use the launch file in the `moveit_example` package instead (found in examples repo, usage is described in the [Additional packages](https://github.com/kuka-ros/kuka_drivers/wiki#moveit-integration) section of the project overview).
 
 ### Launch arguments
 
@@ -303,13 +303,13 @@ Both launch files support the following arguments:
 - `client_port`: port of the client machine (default: 59152)
 - `controller_ip`: The IP address of the KUKA Line Interface (KLI) - not used for `rsi_only` setup
 - `mxa_client_port`: port of the client machine where mxAutomation packets are received (default: 1337)
-- `robot_model` and `robot_family`: defines which robot to use. The available options for the valid model and family combinations can be found in the [readme](https://github.com/kroshu/kuka_robot_descriptions?tab=readme-ov-file#what-data-is-verified) of the `kuka_robot_descriptions` repository.
+- `robot_model` and `robot_family`: defines which robot to use. The available options for the valid model and family combinations can be found in the [readme](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#what-data-is-verified) of the `kuka_robot_descriptions` repository.
 - `mode`: if set to 'mock', the `KukaMockHardwareInterface` will be used instead of the `KukaRSIHardwareInterface`. This enables trying out the driver without actual hardware.
 - `use_gpio`: if set to `false` the usage of I/Os are disabled (defaults to `true`).
 - `namespace`: adds a namespace to all nodes and controllers of the driver, and modifies the `prefix` argument of the robot description macro to `namespace_`
 - `x`, `y`, `z`: define the position of `base_link` relative to the `world` frame in meters (default: [0, 0, 0])
 - `roll`, `pitch`, `yaw`: define the orientation of `base_link` relative to the `world` frame in radians (default: [0, 0, 0])
-- `roundtrip_time`: The roundtrip time (in microseconds) to be enforced by the [KUKA mock hardware interface](https://github.com/kroshu/kuka_robot_descriptions?tab=readme-ov-file#custom-mock-hardware), (defaults to 4000 us, only used if `mode` is set to 'mock')
+- `roundtrip_time`: The roundtrip time (in microseconds) to be enforced by the [KUKA mock hardware interface](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#custom-mock-hardware), (defaults to 4000 us, only used if `mode` is set to 'mock')
 - `controller_config_dir`: the directory that contains all controller configuration files (defaults to `kuka_rsi_driver/config`). The driver expects the following file names in this directory:
   - `ros2_controller_config_rsi_only.yaml` (used when `driver_version:=rsi_only`)
   - `ros2_controller_config_extended.yaml` (used when `driver_version:=eki_rsi` or `driver_version:=mxa_rsi`)
@@ -342,7 +342,7 @@ The `startup_with_rviz.launch.py` additionally contains one argument:
 
 - `rviz_config`: the location of the `rviz` configuration file (defaults to `kuka_resources/config/view_6_axis_urdf.rviz`)
 
-**Details** about the `mode` parameter can be viewed in the [kuka_robot_descriptions README](https://github.com/kroshu/kuka_robot_descriptions?tab=readme-ov-file#modes).
+**Details** about the `mode` parameter can be viewed in the [kuka_robot_descriptions README](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#modes).
 
 When `enable_rsi_monitoring:=true` is used, the UDP port monitor uses [Scapy](https://scapy.net/) to passively sniff traffic on `client_port` (the RSI port), auto-detects the peer sender port from the first sent RSI packet, and correlates packets by `<IPOC>` value. Summary statistics are calculated only from matching receive/set packet pairs. Running `rsi_monitor_node` requires root privileges (or equivalent packet-capture capabilities such as `CAP_NET_RAW`/`CAP_NET_ADMIN`).
 
@@ -393,7 +393,7 @@ ros2 lifecycle set robot_manager activate
 
 ## External axes configuration
 
-Both KSS and the RSI option package support adding external axes to the robot. We provide an [example](https://github.com/kroshu/examples/blob/master/kuka_external_axis_examples) that integrates a single linear axis. This example, together with the structure and documentation, should help users implement their own external‑axis configurations.
+Both KSS and the RSI option package support adding external axes to the robot. We provide an [example](https://github.com/kuka-ros/examples/blob/master/kuka_external_axis_examples) that integrates a single linear axis. This example, together with the structure and documentation, should help users implement their own external‑axis configurations.
 
 ### Controller-side configuration
 
@@ -442,7 +442,7 @@ For custom setups, use the name of the corresponding context file.
 
 ### Client-side configuration
 
-See the [kuka_robot_descriptions README](https://github.com/kroshu/kuka_robot_descriptions/blob/master/README.md#external-axis-support) for all client-side configuration steps. The relevant launch arguments for enabling KL composition are described in the [Launch arguments](#launch-arguments) section (`use_external_axis`, `kl_model`, `kl_prefix`, and the third-party integration parameters).
+See the [kuka_robot_descriptions README](https://github.com/kuka-ros/kuka_robot_descriptions/blob/master/README.md#external-axis-support) for all client-side configuration steps. The relevant launch arguments for enabling KL composition are described in the [Launch arguments](#launch-arguments) section (`use_external_axis`, `kl_model`, `kl_prefix`, and the third-party integration parameters).
 
 > [!NOTE]
 > The driver supports only __revolute__ and __prismatic__ external joints.
