@@ -1,8 +1,8 @@
-# KSS and iiQKA.OS2 drivers (RSI)
+# iiQKA.OS2 drivers (RSI)
 
-This guide provides instructions for setting up and using the RSI-based ROS 2 driver for KUKA robots running on **KUKA System Software (KSS)** and **iiQKA.OS2**.
+This guide provides instructions for setting up and using the RSI-based ROS 2 driver for KUKA robots running and **iiQKA.OS2**.
 
-The driver supports three configurations on both KSS and iiQKA.OS2:
+The driver supports three configurations for iiQKA.OS2:
 
 - `rsi_only`: Uses only the RSI channel.
 - `eki_rsi`: Uses EKI for non-real-time startup/status handling and RSI for cyclic control.
@@ -14,14 +14,6 @@ The integration of EKI and mxA not only helps the initiation of external control
 
 The following tables contain the exact versions used for testing the driver.
 
-### KSS tested configurations
-
-| Controller | Robot                | KSS Version | EthernetKRL Version | RSI Version |
-|------------|----------------------|-------------|---------------------|-------------|
-| KR C4 OPS  | &ndash;              | 8.6.11      | 3.1.4               | 4.1.3       |
-| KR C5 OPS  | &ndash;              | 8.7.5       | 3.2.5               | 5.0.2       |
-| KR C5      | KR 120 R2700-2 Dummy | 8.7.5       | 3.2.5               | 5.0.2       |
-| KR C5      | KR 6 R900-2          | 8.7.5       | 3.2.5               | 5.0.2       |
 
 ### iiQKA.OS2 tested configurations
 
@@ -41,14 +33,6 @@ To be able to connect to RSI running on the controller, a fixed IP in the subnet
 ## Controller-side setup (OS-specific)
 
 To set up the controller with WorkVisual/iiQWorks.Sim, a Windows machine is also required with a fixed IP in the subnet of the KLI interface for transferring the project.
-
-### KSS setup
-
-Use the SDK setup guide for all KSS controller-side steps (network, file deployment, wrappers):
-
-- [External Control Setup for KSS](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_common/doc/kss_setup.md)
-
-Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available in this file.
 
 ### iiQKA.OS2 setup (RSI 6.x)
 
@@ -78,7 +62,7 @@ The parameters in the driver configuration file can be changed during runtime us
 
 ### I/O configuration
 
-KSS and iiQKA.OS2 support inputs and outputs for real-time usage through RSI. The I/Os are defined from the robot controller's point of view: an `input` can only have state interfaces in ROS Control, while an `output` can have both state and command interfaces.
+iiQKA.OS2 support inputs and outputs for real-time usage through RSI. The I/Os are defined from the robot controller's point of view: an `input` can only have state interfaces in ROS Control, while an `output` can have both state and command interfaces.
 
 RSI groups the I/Os into three categories:
 
@@ -94,17 +78,15 @@ Generally, only a few constraints are imposed on naming the I/Os:
 
 #### Controller-side configuration
 
-Example GPIO configuration files are available in the `kuka_external_control_sdk/krc_setup` directory for both operating systems:
+Example GPIO configuration files are available in the `kuka_external_control_sdk/krc_setup` directory:
 
-| File | KSS | iiQKA.OS2 |
-|------|-----|-----------|
-| RSI context | `kss/Config/User/Common/SensorInterface/rsi_gpio_joint_pos.rsix` | `iiqka_os2/RobotSensorInterface/Context/rsi_gpio_joint_pos.rsix` |
-| Ethernet config | `kss/Config/User/Common/SensorInterface/rsi_gpio_ethernet.xml` | `iiqka_os2/RobotSensorInterface/Ethernet_configuration/rsi_gpio_ethernet.xml` |
-| Example program | `kss/KRC/R1/Program/rsi_gpio_example.src` | `iiqka_os2/Program/RSI/rsi_gpio_example.src` |
+- RSI context: `iiqka_os2/RobotSensorInterface/Context/rsi_gpio_joint_pos.rsix`
+- Ethernet config: `iiqka_os2/RobotSensorInterface/Ethernet_configuration/rsi_gpio_ethernet.xml`
+- Example program: `iiqka_os2/Program/RSI/rsi_gpio_example.src`
 
 **RSI context file (`rsi_gpio_joint_pos.rsix`):**
 - Provides an example of how to set up the different I/Os. For detailed instructions, refer to the RSI manual on KUKA Xpert.
-- The file can be edited via RSI Visual in WorkVisual (KSS) or iiQWorks.App Builder (iiQKA.OS2).
+- The file can be edited via iiQWorks.App Builder
 - All I/Os should be connected to the inputs or outputs of the Ethernet RSI object.
 
 **Ethernet configuration file (`rsi_gpio_ethernet.xml`):**
@@ -393,7 +375,7 @@ ros2 lifecycle set robot_manager activate
 
 ## External axes configuration
 
-Both KSS and the RSI option package support adding external axes to the robot. We provide an [example](https://github.com/kuka-ros/examples/blob/master/kuka_external_axis_examples) that integrates a single linear axis. This example, together with the structure and documentation, should help users implement their own external‑axis configurations.
+Both iiQKA.OS2 and the RSI option package support adding external axes to the robot. We provide an [example](https://github.com/kuka-ros/examples/blob/master/kuka_external_axis_examples) that integrates a single linear axis. This example, together with the structure and documentation, should help users implement their own external‑axis configurations.
 
 ### Controller-side configuration
 
@@ -433,10 +415,7 @@ This allows RSI to parse data from the driver.
 
 #### Program
 
-To adapt the KRL program for the external-axis example:
-
-- KSS: update the RSI context name in `KRC/R1/Program/RSI/rsi_joint_pos_4ms.src` or `KRC/R1/Program/RSI/rsi_joint_pos_12ms.src` to `rsi_ext_axis_example`.
-- iiQKA.OS2: update the `CONTEXT_NAME` variable in `Program/RSI/rsi_joint_pos.dat` to `rsi_ext_axis_example`.
+To adapt the KRL program for the external-axis example, update the `CONTEXT_NAME` variable in `Program/RSI/rsi_joint_pos.dat` to `rsi_ext_axis_example`.
 
 For custom setups, use the name of the corresponding context file.
 

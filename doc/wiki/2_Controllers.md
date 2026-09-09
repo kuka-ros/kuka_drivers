@@ -32,20 +32,8 @@ __Required Parameters__:
 
 Broadcasters receive the state interfaces of a hardware and publish it to a ROS2 topic.
 
-### 2.1. `fri_state_broadcaster`
 
-The `FRIStateBroadcaster` publishes the actual state of FRI to the `~/fri_state` topic, using the custom [FRIStateArray](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_driver_interfaces/msg/FRIStateArray.msg) message, which contains an array of [FRIState](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_driver_interfaces/msg/FRIState.msg) messages.
-
-__Required Parameters__: None
-
-__Optional Parameters__:
-
-- `robot_prefixes` (`string[]`, default `['']`):
-  - Empty string entry (`''`) maps to unprefixed interfaces for single-robot compatibility (`fri_state/session_state`, etc.).
-  - Non-empty entries map to prefixed interfaces (`<robot_prefix>_fri_state/session_state`, etc.).
-  - One publisher instance broadcasts the state of all robots as a single `FRIStateArray` message.
-
-### 2.2. `kuka_event_broadcaster`
+### 2.1. `kuka_event_broadcaster`
 
 The `EventBroadcaster` publishes server state change events on
 `~/hardware_event` using `kuka_driver_interfaces::msg::HardwareEvent`, which contains a robot ID (prefix) and the event as an integer (enum).
@@ -94,19 +82,6 @@ __Optional Parameters__:
   - Empty string entry (`''`) maps to the unprefixed `runtime_config/control_mode` interface.
   - Non-empty entries map to prefixed interfaces (`<robot_prefix>_runtime_config/control_mode`).
 
-### 3.2. `fri_configuration_controller`
-
-The `SendPeriodMilliSec` parameter of FRI defines the period with which the controller sends state updates, while the `ReceiveMultiplier` defines the answer rate factor (ratio of receiving states and sending commands). These are parameters of the hardware interface, which can be modified in connected state, when control is not active. To support changing these parameters after startup, the `FRIConfigurationController` subscribes to the `~/set_fri_config` topic. Sending a message containing the desired integer values of `send_period_ms` (cycle time) and `receive_multiplier` updates the parameters of the hardware interface.
-
-In multi-robot mode, one `FRIConfigurationController` instance updates multiple prefixed command interfaces, but it still accepts only a single shared `~/set_fri_config` input topic. Therefore the same FRI configuration is applied to all configured robots.
-
-__Required Parameters__: None
-
-__Optional Parameters__:
-
-- `robot_prefixes` (`string[]`, default `['']`):
-  - Empty string entry (`''`) maps to unprefixed command interfaces (`runtime_config/receive_multiplier`, `runtime_config/send_period`).
-  - Non-empty entries map to prefixed interfaces (`<robot_prefix>_runtime_config/receive_multiplier`, `<robot_prefix>_runtime_config/send_period`).
 
 ## 4. Hybrid Controllers
 
