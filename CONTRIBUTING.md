@@ -1,6 +1,6 @@
 ## Issue tracking
 
-If you have questions, suggestions or found a bug, feel free to open an [issue](https://github.com/kroshu/kuka_drivers/issues).
+If you have questions, suggestions or found a bug, feel free to open an [issue](https://github.com/kuka-ros/kuka_drivers/issues).
 When filing an issue, please check open issues to make sure somebody else hasn't already reported it. Please try to include as much information as you can, including:
 
 - A reproducible test case or series of steps

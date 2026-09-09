@@ -34,7 +34,7 @@ The following tables contain the exact versions used for testing the driver.
 
 ## Client-side setup
 
-It is recommended to run the driver on a real-time capable client machine. Detailed instructions for setting up the `PREEMPT_RT` path are available on the [Realtime](https://github.com/kuka-ros/kuka_drivers/wiki/5_Realtime) wiki page.
+It is recommended to run the driver on a real-time capable client machine. Detailed instructions for setting up the `PREEMPT_RT` path are available on the [Realtime](./3_Realtime.md) wiki page.
 
 To be able to connect to RSI running on the controller, a fixed IP in the subnet of the RSI interface is required on the Linux machine.
 
@@ -46,7 +46,7 @@ To set up the controller with WorkVisual/iiQWorks.Sim, a Windows machine is also
 
 Use the SDK setup guide for all KSS controller-side steps (network, file deployment, wrappers):
 
-- [External Control Setup for KSS](https://github.com/kuka-ros/kuka-external-control-sdk/blob/master/kuka_external_control_sdk/doc/kss_setup.md)
+- [External Control Setup for KSS](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_common/doc/kss_setup.md)
 
 Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available in this file.
 
@@ -54,7 +54,7 @@ Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available i
 
 Use the SDK setup guide for all iiQKA.OS2 controller-side steps (network, file deployment, wrappers):
 
-- [External Control Setup for iiQKA.OS2](https://github.com/kuka-ros/kuka-external-control-sdk/blob/master/kuka_external_control_sdk/doc/iiqka_os2_setup.md)
+- [External Control Setup for iiQKA.OS2](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_common/doc/iiqka_os2_setup.md)
 
 Setups for all three versions (`rsi_only`, `eki_rsi`, `mxa_rsi`) are available in this file.
 
