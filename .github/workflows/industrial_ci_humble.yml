@@ -24,9 +24,8 @@ jobs:
     env:
       ROS_REPO: ros
       BUILDER: colcon
-      ANALYZER: sonarqube
       TEST_COVERAGE: true
-      UPSTREAM_WORKSPACE: 'github:kroshu/kuka_robot_descriptions#humble github:kroshu/kuka-external-control-sdk#master'
+      UPSTREAM_WORKSPACE: 'github:kuka-ros/kuka_robot_descriptions#humble github:kuka-ros/kuka-external-control-sdk#master'
       ROS_DISTRO: humble
       CCACHE_DIR: /github/home/.ccache # Directory for ccache (and how we enable ccache in industrial_ci)
       EVENT_NAME: ${{ github.event_name }}
@@ -34,15 +33,9 @@ jobs:
       PR_BRANCH: ${{ github.event.pull_request.head.ref }}
       PR_BASE: ${{ github.event.pull_request.base.ref }}
       PR_NUMBER: ${{ github.event.number }}
-      ANALYZER_TOKEN: ${{ secrets.ANALYZER_TOKEN }}
       DEBUG_BASH: true
     runs-on: ubuntu-latest
     steps:
-      - name: Reset ANALYZER for scheduled and push runs
-        run: |
-          if [[ "${{ github.event_name }}" == "schedule" ]] || { [[ "${{ github.event_name }}" == "push" ]] && [[ "${{ github.ref }}" != "refs/heads/humble" ]]; }; then
-            echo "ANALYZER=" >> $GITHUB_ENV
-          fi
       - name: Checkout code
         if: github.event.schedule != ''
         uses: actions/checkout@v2
@@ -62,4 +55,4 @@ jobs:
           key: ccache-${{ matrix.env.ROS_DISTRO }}-${{ matrix.env.ROS_REPO }}
 
       # Run industrial_ci
-      - uses: 'kroshu/industrial_ci@master'
+      - uses: 'ros-industrial/industrial_ci@master'

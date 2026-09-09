@@ -13,22 +13,12 @@ body:
       placeholder: Describe your issue in a few sentences
     validations:
       required: true
-  - type: dropdown
-    id: robot-os
-    attributes:
-      label: "KUKA robot OS"
-      description: Version of the KUKA OS are you using
-      multiple: true
-      options:
-        - KSS
-        - Sunrise
-        - iiQKA
   - type: input
     id: os-version
     attributes:
       label: "KUKA robot OS version"
       description: Version of the KUKA robot OS
-      placeholder: eg. KSS 8.6
+      placeholder: eg. iiQKA.OS2 9.3
     validations:
       required: true
   - type: input
@@ -36,7 +26,7 @@ body:
     attributes:
       label: "KUKA external interface version"
       description: Version of the KUKA external interface
-      placeholder: eg. RSI 4.1.3
+      placeholder: eg. RSI 6.1.0
     validations:
       required: true
   - type: input

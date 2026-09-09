@@ -1,4 +1,0 @@
-/**/fri_state_broadcaster:
-  ros__parameters:
-    # Empty string means unprefixed interfaces for single-robot compatibility.
-    robot_prefixes: [""]
