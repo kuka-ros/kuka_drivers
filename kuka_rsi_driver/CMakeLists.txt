@@ -19,7 +19,7 @@ find_package(ament_cmake REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(kuka_driver_interfaces REQUIRED)
-find_package(kuka-external-control-sdk CONFIG REQUIRED)
+find_package(kuka-external-control-sdk-iiqka2 CONFIG REQUIRED)
 find_package(kuka_drivers_core REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(std_msgs REQUIRED)
@@ -43,8 +43,8 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE "KUKA_RSI_DRIVER_BUILDING_LIB
 # prevent pluginlib from using boost
 target_compile_definitions(${PROJECT_NAME} PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 
-ament_target_dependencies(${PROJECT_NAME} hardware_interface kuka_drivers_core kuka-external-control-sdk)
-target_link_libraries(${PROJECT_NAME} Kuka::kuka-external-control-sdk yaml-cpp)
+ament_target_dependencies(${PROJECT_NAME} hardware_interface kuka_drivers_core kuka-external-control-sdk-iiqka2)
+target_link_libraries(${PROJECT_NAME} Kuka::kuka-external-control-sdk-iiqka2 yaml-cpp)
 
 # Shared library for robot_manager_base
 add_library(robot_manager_base STATIC src/robot_manager_base.cpp)
