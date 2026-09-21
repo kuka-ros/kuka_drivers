@@ -93,6 +93,11 @@ source ~/ros2_ws/install/setup.bash
 
 ## Getting Started
 
-Documentation of this project can be found on the repository's [Wiki](https://github.com/kuka-ros/kuka_drivers/wiki) page.
+Documentation of this project is available in the package's [`doc`](kuka_drivers/doc) directory:
+
+- [Project overview](kuka_drivers/doc/Home.md)
+- [KSS and iiQKA.OS2 drivers (RSI)](kuka_drivers/doc/1_RSI.md)
+- [KUKA-specific controllers](kuka_drivers/doc/2_Controllers.md)
+- [Real-time patch setup](kuka_drivers/doc/3_Realtime.md)
 
 If you find something confusing, not working, or would like to contribute, please read our [contributing guide](CONTRIBUTING.md) before opening an issue or creating a pull request.

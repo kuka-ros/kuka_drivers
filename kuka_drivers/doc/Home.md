@@ -213,4 +213,4 @@ All three real-time driver families expose a `runtime_config/interpolation_count
 
 ## Detailed setup and startup instructions
 
-For detailed information about the drivers, visit the dedicated wiki pages for [KSS & iiQKA.OS2](./1_RSI.md), [Sunrise](./3_Sunrise_FRI.md), [iiQKA](./1_iiQKA_EAC.md).
+For detailed information about the drivers, see the [KSS and iiQKA.OS2 RSI guide](./1_RSI.md), the [controller guide](./2_Controllers.md), and the [real-time setup guide](./3_Realtime.md).
