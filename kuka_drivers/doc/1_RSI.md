@@ -255,7 +255,7 @@ Upload the generated file to the controller as described in [Update and upload c
     ros2 launch kuka_rsi_driver startup.launch.py
     ```
 
-    - This starts the 3 core components of every driver (described in the [Non-real-time interface](./Home.md#non-real-time-interface) section of the project overview) and the following controllers:
+    - This starts the 3 core components of the driver (described in the [Non-real-time interface](./0_Overview.md#non-real-time-interface) section of the project overview) and the following controllers:
       - `joint_state_broadcaster` (no configuration file, all state interfaces are published)
       - `joint_trajectory_controller` ([configuration file](https://github.com/kuka-ros/kuka_drivers/tree/master/kuka_rsi_driver/config/joint_trajectory_controller_config.yaml))
     - There is no need to set the Client IP, since the driver automatically listens on the `0.0.0.0` address.
@@ -276,7 +276,7 @@ Upload the generated file to the controller as described in [Update and upload c
   - `eki_rsi` or `mxa_rsi`: RSI program is automatically selected and started
 
 
-On successful activation the brakes of the robot will be released and external control is started. To test moving the robot, the `rqt_joint_trajectory_controller` is not recommended, use the launch file in the `moveit_example` package instead (found in examples repo, usage is described in the [Additional packages](./Home.md#moveit-integration) section of the project overview).
+On successful activation the brakes of the robot will be released and external control is started. To test moving the robot, the `rqt_joint_trajectory_controller` is not recommended, use the launch file in the `moveit_example` package instead (found in examples repo, usage is described in the [Additional packages](./0_Overview.md#moveit-integration) section of the project overview).
 
 ### Launch arguments
 

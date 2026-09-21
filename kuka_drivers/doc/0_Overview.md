@@ -2,14 +2,8 @@
 
 ## Goals of the project
 
-This project aims to provide reliable real-time capable drivers for all KUKA robots. Currently KUKA robots are available with 3 different operating systems with real-time control API-s:
-
-- KSS supporting industrial robots, with Robot Sensor Interface (RSI)
-- Sunrise supporting cobots (LBR iiwa-s), with Fast Robot Interface (FRI)
-- iiQKA supporting cobots (LBR iisy-s), with ExternalAPI.Control (EAC)
-- iiQKA.OS2 supporting industrial robots, with Robot Sensor Interface (RSI >= 6.0.0)
-
-It is also the goal of this project to provide the same API for all four OS-s, hiding the underlying startup procedure and communication technology, thus enabling changing seamlessly to a different KUKA OS.
+This project provides reliable real-time capable drivers for KUKA robots
+running **iiQKA.OS2**, using the Robot Sensor Interface (RSI >= 6.0.0).
 
 Additionally the aim was to write high quality, maintainable code with standardized interfaces, that conforms with the standards defined by the [ROS-Industrial project](https://www.rosin-project.eu/).
 
@@ -24,7 +18,16 @@ Two different interfaces should be defined for all drivers supporting real-time 
 
 The choice for the real-time interface was straightforward, as a standardized control framework exists for ROS2, called `ros2_control`, also supported by ROS-Industrial. The drivers are built using this framework, therefore it is recommended the read through its [documentation](https://control.ros.org/master/doc/ros2_control/doc/index.html), as this documentation builds on the knowledge of the framework.
 
-All 3 of the KUKA real-time interfaces handle the timing on the controller side, so external control is always synchronized with the internal control cycle. This means, that calling the `read` method of the `controller_manager` cannot return immediately, but has to wait until the controller sends an update, which is triggered by the internal clock. Because of this blocking read, the default `ros2_control_node` cannot be used, as there it is expected that the `controller_manager` handles the timing according to the configured control frequency. Therefore a [custom control node](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/src/control_node.cpp) was implemented that uses the `controller_manager` and all other tools of `ros2_control`, but leaves the time management to the robot controller.
+The iiQKA.OS2 real-time interface handles timing on the controller side, so
+external control is always synchronized with the internal control cycle. This
+means that calling the `read` method of the `controller_manager` cannot return
+immediately, but has to wait until the controller sends an update, which is
+triggered by the internal clock. Because of this blocking read, the default
+`ros2_control_node` cannot be used, as it is expected to manage the timing
+according to the configured control frequency. Therefore a [custom control
+node](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/src/control_node.cpp)
+was implemented that uses the `controller_manager` and all other tools of
+`ros2_control`, but leaves time management to the robot controller.
 
 This change does not influence the API of the `ros2_control` framework, the real-time dataflow can be accessed by any controller.
 
@@ -58,7 +61,8 @@ Including the controller state handling in the system state makes the implementa
 - minor performance increase: unused controllers are not active and therefore do not consume resources
 - unexpected behaviour is not possible: external control will not start on the robot, unless all necessary controllers are successfully activated, while control mode changes (on the robot) are only possible after the controllers for the new control mode are activated.
 
-The consequence of the lifecycle interface is, that 3 commands are necessary to start external control for all robots:
+The consequence of the lifecycle interface is that three commands are necessary
+to start external control for an iiQKA.OS2 robot:
 
 - start the appropriate launch file for your robot with your robot model as parameter (details can be found [here](#detailed-setup-and-startup-instructions))
 - `ros2 lifecycle set robot_manager configure`
@@ -70,7 +74,7 @@ The control mode specifications are also part of the common API. They are define
 
 - joint position control: the driver streams cyclic position updates for every joint.
   - Needed command interface(s): `position`
-- joint impedance control: the driver streams cyclic position updates for every joint and additionally stiffness [Nm/rad] and normalized damping [-] attributes, which define how the joint reacts to external effects (around the setpoint position). The effect of gravity is compensated internally. (FRI does not allow changing the impedance attributes in runtime, therefore the initial damping and stiffness values are valid for the whole motion.)
+- joint impedance control: the driver streams cyclic position updates for every joint and additionally stiffness [Nm/rad] and normalized damping [-] attributes, which define how the joint reacts to external effects (around the setpoint position). The effect of gravity is compensated internally.
   - Needed command interface(s): `position`, `stiffness`, `damping`
 - joint velocity control: the driver streams cyclic velocity updates for every joint.
   - Needed command interface(s): `velocity`
@@ -87,13 +91,13 @@ The control mode specifications are also part of the common API. They are define
 
 ### Supported features
 
-The following table shows the supported features and control modes of each driver. (`✓` means supported, `✗` means not supported by the KUKA interface, empty means supported by the KUKA interface, but not yet supported by the driver)
+The following table shows the supported features and control modes of the
+iiQKA.OS2 driver. (`✓` means supported, `✗` means not supported by the KUKA
+interface, and an empty cell means supported by the interface but not yet
+supported by the driver.)
 
 |OS | Joint position control | Joint impedance control | Joint velocity control | Joint torque control | Cartesian position control | Cartesian impedance control | Cartesian velocity control | Wrench control| I/O control|
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|KSS| ✓ | ✗ | ✗ | ✗ | | ✗ | ✗ | ✗ | ✓ |
-|Sunrise| ✓ | ✓ | ✗ | ✓ | | | ✗ | | |
-|iiQKA| ✓ | ✓ | ✗ | ✓ | ✗ | ✗ | ✗ | ✗ | ✗ |
 |iiQKA.OS2| ✓ | | | | | | | | ✓ |
 
 ## Additional packages
@@ -108,7 +112,7 @@ The repository contains a few other packages aside from the 3 drivers:
 
 The `ros2_control` framework supports MoveIt out-of-the-box, as the `joint_trajectory_controller` can interpolate the trajectories planned by it. Setting up Moveit is a little more complex, therefore an example package, `moveit_example`, is provided to help developers. The `moveit_example` package is located in the [`examples`](https://github.com/kuka-ros/examples) repository. This contains basic examples of using MoveIt with the driver. Additionally, it contains a [launch file](https://github.com/kuka-ros/examples/blob/master/moveit_example/launch/launch_trajectory_publisher.launch.py) that commands 4 goal positions near the home position cyclically (the points and parameters can be modified in [this](https://github.com/kuka-ros/examples/blob/master/moveit_example/config/dummy_publisher.yaml) configuration file). This can be used to test moving any robot with the driver, and is the recommended way instead of the `rqt_joint_trajectory_controller`, which commands very jerky trajectories due to batching.
 
-As mentioned earlier, the package contains a [launch file](https://github.com/kuka-ros/examples/blob/master/moveit_example/launch/moveit_planning_example.launch.py) that starts the iiQKA driver, `rviz`, and the `move_group` server with the required configuration. The `robot_manager` lifecycle node should be configured and activated after startup.
+As mentioned earlier, the package contains a [launch file](https://github.com/kuka-ros/examples/blob/master/moveit_example/launch/moveit_planning_example.launch.py) that starts the iiQKA.OS2 driver, `rviz`, and the `move_group` server with the required configuration. The `robot_manager` lifecycle node should be configured and activated after startup.
 
 After activation, the Motion Planning plugin can be added (`Add` -> `moveit_ros_visualisation` -> `MotionPlanning`) to plan trajectories from the `rviz` GUI. (`Planning group` in the `Planning` tab should be changed to `manipulator`.)
 
@@ -202,7 +206,7 @@ Solution: if `update` has not yet been called since last `write`, delay current 
 
 #### Interpolation count - internal interface
 
-All three real-time driver families expose a `runtime_config/interpolation_count` command interface.
+The iiQKA.OS2 driver exposes a `runtime_config/interpolation_count` command interface.
 
 - The `kuka_event_broadcaster` updates it once per controller update cycle (and resets it to avoid overflow)
 - Hardware interfaces use it as a sequencing check before `write()` to detect when controller updates and hardware writes are no longer progressing in the expected order.
@@ -213,4 +217,4 @@ All three real-time driver families expose a `runtime_config/interpolation_count
 
 ## Detailed setup and startup instructions
 
-For detailed information about the drivers, see the [KSS and iiQKA.OS2 RSI guide](./1_RSI.md), the [controller guide](./2_Controllers.md), and the [real-time setup guide](./3_Realtime.md).
+For detailed information about the drivers, see the [iiQKA.OS2 RSI guide](./1_RSI.md), the [controller guide](./2_Controllers.md), and the [real-time setup guide](./3_Realtime.md).
