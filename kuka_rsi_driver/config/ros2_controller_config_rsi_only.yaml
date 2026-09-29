@@ -2,10 +2,6 @@
   ros__parameters:
     update_rate: 250  # Hz
 
-    defaults:
-      allow_controller_activation_with_inactive_hardware: true
-      deactivate_controllers_on_hardware_self_deactivate: false
-
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
     joint_state_broadcaster:
@@ -14,6 +10,3 @@
       type: gpio_controllers/GpioCommandController
     event_broadcaster:
       type: kuka_controllers/EventBroadcaster
-
-    overruns:
-      print_warnings: false

@@ -2,7 +2,7 @@
 Changelog for package kuka_drivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.0.0 (2026-07-16)
+1.1.0 (2026-07-15)
 ------------------
 * Add mxAutomation support 
 

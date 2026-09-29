@@ -2,7 +2,7 @@
 Changelog for package kuka_rsi_driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-2.0.0 (2026-07-16)
+1.1.0 (2026-07-15)
 ------------------
 * Synchronize update rate of controller manager 
 * Add option to lock memory

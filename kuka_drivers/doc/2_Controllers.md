@@ -13,7 +13,7 @@ These controllers update the command interfaces of a hardware cyclically.
 
 ### 1.1. `joint_group_impedance_controller`
 
-The joint impedance controller listens on the `~/command` topic and updates the `stiffness` and `damping` interfaces of the hardware accordingly.
+The joint impedance controller listens on the `~/commands` topic and updates the `stiffness` and `damping` interfaces of the hardware accordingly.
 The command must be of `std_msgs::Float64MultiArray` type and must contain the values for all configured joints. The order of the values should match the `stiffness_1, damping_1, stiffness_2, ...` pattern. The controller only processes the commands received on this topic, when it is in active state.
 
 Example cli command to set damping to 0.7 and stiffness to 100 for all joints of a 6 DOF robot:
@@ -35,15 +35,9 @@ Broadcasters receive the state interfaces of a hardware and publish it to a ROS2
 
 ### 2.1. `kuka_event_broadcaster`
 
-The `EventBroadcaster` publishes server state change events on
-`~/hardware_event` using `kuka_driver_interfaces::msg::HardwareEvent`, which contains a robot ID (prefix) and the event as an integer (enum).
-
-The same controller also updates the `runtime_config/interpolation_count` command interface once
-per controller update cycle. This counter is used by the hardware interfaces as a lightweight
-sequencing diagnostic to detect mismatches between controller updates and hardware writes, which is relevant for multi-robot timing.
-
-- Single robot (default): uses `state/server_state` interface and publishes one message per event.
-- Multi robot (with `robot_prefixes`): uses state interfaces `<robot_prefix>_state/server_state` and publishes one message per changed robot event.
+The `EventBroadcaster` reads the `state/server_state` interface and publishes server state change
+events as `std_msgs::msg::UInt8` messages on the `~/hardware_event` topic. A message is published
+when the event value changes.
 
 The enum values are equivalent with the following events:
 
@@ -55,12 +49,6 @@ The enum values are equivalent with the following events:
 
 __Required Parameters__: None
 
-__Optional Parameters__:
-
-- `robot_prefixes` (`string[]`, default `['']`):
-  - Empty string entry (`''`) maps to the unprefixed `state/server_state` interface.
-  - Non-empty entries map to prefixed interfaces (`<robot_prefix>_state/server_state`).
-
 ## 3. Configuration Controllers
 
 Hardware interfaces do not support parameters that can be changed in runtime. To provide this behaviour, configuration controllers can be used, which update specific command interfaces of a hardware, that are exported as a workaround instead of parameters.
@@ -68,19 +56,9 @@ Hardware interfaces do not support parameters that can be changed in runtime. To
 ### 3.1. `kuka_control_mode_handler`
 
 The `ControlModeHandler` can update the `control_mode` command interface of a hardware. It listens on the `~/control_mode` topic and makes control mode changes possible without having to reactivate the driver.
-The control mode is [defined as an enum](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/include/kuka_drivers_core/control_mode.hpp) in the `kuka_drivers_core` package, the subscription therefore is of an unsigned integer type.
-
-In multi-robot mode, one `ControlModeHandler` instance updates multiple prefixed
-`control_mode` command interfaces, but it still accepts only a single shared `~/control_mode`
-input topic. Therefore the same control mode is applied to all configured robots.
+The control mode is [defined as an enum](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/include/kuka_drivers_core/control_mode.hpp) in the `kuka_drivers_core` package. The topic type is `std_msgs::msg::UInt32`, and the controller writes the selected value to the `runtime_config/control_mode` command interface.
 
 __Required Parameters__: None
-
-__Optional Parameters__:
-
-- `robot_prefixes` (`string[]`, default `['']`):
-  - Empty string entry (`''`) maps to the unprefixed `runtime_config/control_mode` interface.
-  - Non-empty entries map to prefixed interfaces (`<robot_prefix>_runtime_config/control_mode`).
 
 
 ## 4. Hybrid Controllers
@@ -89,7 +67,7 @@ Hybrid Controllers group together related functionalities that are intended to b
 
 ### 4.1. `kuka_kss_message_handler`
 
-The `kuka_kss_message_handler` controller only works for the EKI + RSI driver. It provides two non-real-time capabilities:
+The `kuka_kss_message_handler` controller is loaded for the EKI + RSI and mxAutomation + RSI drivers. It provides two non-real-time capabilities:
 
 
 - __Set RSI Cycle Time__
@@ -98,9 +76,6 @@ The `kuka_kss_message_handler` controller only works for the EKI + RSI driver. I
   - 1 &rarr; 4 ms
   - 2 &rarr; 12 ms
 
-  In multi-robot mode, this topic is shared across all configured robots, therefore the selected
-  cycle time is applied to all of them.
-
   ```shell
   ros2 topic pub /kss_message_handler/cycle_time std_msgs/msg/UInt8 "{data: 1}" --once
   ```
@@ -108,9 +83,7 @@ The `kuka_kss_message_handler` controller only works for the EKI + RSI driver. I
 - __Monitor Robot Status__
 
   Subscribe to `~/status` to receive updates via
-  `kuka_driver_interfaces::msg::KssStatusArray` (`robot_names[]` + `statuses[]`).
-  The `statuses` entries are `kuka_driver_interfaces::msg::KssStatus` values and each index
-  corresponds to the same index in `robot_names`.
+  `kuka_driver_interfaces::msg::KssStatus`.
 
   Status messages are published at 1 Hz regardless of whether values changed.
 
@@ -132,13 +105,6 @@ The `kuka_kss_message_handler` controller only works for the EKI + RSI driver. I
   ros2 topic echo /kss_message_handler/status
   ```
 
-__Note:__ These features are available only when the driver is in the __configured__ state. However, status updates are still published in the __active__ state. These updates are only sent if the EKI driver has an idle cycle, meaning no other messages are being transmitted at that moment; this applies to both the configured and the active states.
+__Note:__ The status publisher is created when the controller is configured and continues publishing in the active state.
 
 __Required Parameters__: None
-
-__Optional Parameters__:
-
-- `robot_prefixes` (`string[]`, default `['']`):
-  - Empty string entry (`''`) maps to unprefixed state interfaces (`state/control_mode`, `state/cycle_time`, etc.) and unprefixed command interface (`runtime_config/cycle_time`).
-  - Non-empty entries map to prefixed interfaces (`<robot_prefix>_state/control_mode`, `<robot_prefix>_runtime_config/cycle_time`, etc.).
-  - The `~/cycle_time` topic is shared across all configured robots, allowing centralized control of all robot instances.

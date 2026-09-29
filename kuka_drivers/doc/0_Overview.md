@@ -25,7 +25,7 @@ immediately, but has to wait until the controller sends an update, which is
 triggered by the internal clock. Because of this blocking read, the default
 `ros2_control_node` cannot be used, as it is expected to manage the timing
 according to the configured control frequency. Therefore a [custom control
-node](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/src/control_node.cpp)
+node](https://github.com/kuka-ros/kuka_drivers/blob/humble/kuka_drivers_core/src/control_node.cpp)
 was implemented that uses the `controller_manager` and all other tools of
 `ros2_control`, but leaves time management to the robot controller.
 
@@ -105,14 +105,14 @@ supported by the driver.)
 The repository contains a few other packages aside from the 3 drivers:
 
 - `kuka_driver_interfaces`: this package contains the custom message definition necessary for KUKA robots.
-- `kuka_drivers_core`: this package contains core functionalities used by more drivers, including the `control_node`, base classes for nodes with improved parameter handling, enum and constant definitions and a class for managing the controller activation and deactivation at control mode changes. Details about these features can be found in the package [documentation](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/README.md)
+- `kuka_drivers_core`: this package contains core functionalities used by more drivers, including the `control_node`, base classes for nodes with improved parameter handling, enum and constant definitions and a class for managing the controller activation and deactivation at control mode changes. Details about these features can be found in the package [documentation](https://github.com/kuka-ros/kuka_drivers/blob/humble/kuka_drivers_core/README.md)
 - `kuka_rsi_simulator`: this package contains a simple simulator of RSI, that implements a UDP server accepting the same xml format as RSI and returning the commanded values as the current state, without any checks.
 
 ## MoveIt integration
 
-The `ros2_control` framework supports MoveIt out-of-the-box, as the `joint_trajectory_controller` can interpolate the trajectories planned by it. Setting up Moveit is a little more complex, therefore an example package, `moveit_example`, is provided to help developers. The `moveit_example` package is located in the [`examples`](https://github.com/kuka-ros/examples) repository. This contains basic examples of using MoveIt with the driver. Additionally, it contains a [launch file](https://github.com/kuka-ros/examples/blob/master/moveit_example/launch/launch_trajectory_publisher.launch.py) that commands 4 goal positions near the home position cyclically (the points and parameters can be modified in [this](https://github.com/kuka-ros/examples/blob/master/moveit_example/config/dummy_publisher.yaml) configuration file). This can be used to test moving any robot with the driver, and is the recommended way instead of the `rqt_joint_trajectory_controller`, which commands very jerky trajectories due to batching.
+The `ros2_control` framework supports MoveIt out-of-the-box, as the `joint_trajectory_controller` can interpolate the trajectories planned by it. Setting up Moveit is a little more complex, therefore an example package, `moveit_example`, is provided to help developers. The `moveit_example` package is located in the [`examples`](https://github.com/kuka-ros/examples) repository. This contains basic examples of using MoveIt with the driver. Additionally, it contains a [launch file](https://github.com/kuka-ros/examples/blob/humble/moveit_example/launch/launch_trajectory_publisher.launch.py) that commands 4 goal positions near the home position cyclically (the points and parameters can be modified in [this](https://github.com/kuka-ros/examples/blob/humble/moveit_example/config/dummy_publisher.yaml) configuration file). This can be used to test moving any robot with the driver, and is the recommended way instead of the `rqt_joint_trajectory_controller`, which commands very jerky trajectories due to batching.
 
-As mentioned earlier, the package contains a [launch file](https://github.com/kuka-ros/examples/blob/master/moveit_example/launch/moveit_planning_example.launch.py) that starts the iiQKA.OS2 driver, `rviz`, and the `move_group` server with the required configuration. The `robot_manager` lifecycle node should be configured and activated after startup.
+As mentioned earlier, the package contains a [launch file](https://github.com/kuka-ros/examples/blob/humble/moveit_example/launch/moveit_planning_example.launch.py) that starts the iiQKA.OS2 driver, `rviz`, and the `move_group` server with the required configuration. The `robot_manager` lifecycle node should be configured and activated after startup.
 
 After activation, the Motion Planning plugin can be added (`Add` -> `moveit_ros_visualisation` -> `MotionPlanning`) to plan trajectories from the `rviz` GUI. (`Planning group` in the `Planning` tab should be changed to `manipulator`.)
 
@@ -145,7 +145,7 @@ The joint position values commanded are available on the topic `/joint_group_imp
 
 Additionally the `trajectory_execution.allowed_start_tolerfance` parameter in `moveit_controllers.yaml` (found in the moveit support packages) should be increased based on the actual displacement between commanded and measured joint values.
 
-If you would like to only move the robot by sending a goal to the `joint_trajectory_controller` for interpolation (e.g. with the [example trajectory publisher](https://github.com/kuka-ros/examples/blob/master/moveit_example/launch/launch_trajectory_publisher.launch.py)), the following line should be added to the controller configuration file:
+If you would like to only move the robot by sending a goal to the `joint_trajectory_controller` for interpolation (e.g. with the [example trajectory publisher](https://github.com/kuka-ros/examples/blob/humble/moveit_example/launch/launch_trajectory_publisher.launch.py)), the following line should be added to the controller configuration file:
 
 ```yaml
 open_loop_control: true
@@ -153,67 +153,7 @@ open_loop_control: true
 
 ## Multi-robot scenario
 
-Since ROS 2 Jazzy, `ros2_control` supports asynchronous hardware interfaces. With this feature enabled, multiple robots can be started within the same `controller_manager`, because each hardware interface can run in its own asynchronous execution context, the blocking `read()` methods no longer cause an issue.
-
-For a multi-robot setup, a dedicated robot description xacro should be created that loads both robot models in one file using launch arguments (for example robot model names, prefixes and optional namespace-specific parameters). This combined xacro is then passed as the single `robot_description` to the control node. It is important that the synchronous hardware interface is activated last, because all component activation steps acquire a lock that blocks the read-write loop of the synchronous thread, therefore activation would starve out the already active hardware interface of the main thread.
-
-A dedicated launch file is also required for this setup. It should declare the arguments of all robots, generate the combined xacro, start one `controller_manager`, and spawn the controllers for all robots with the correct names and configuration files. Configuration files still need to be adapted to the corresponding namespaces and prefixed joint names. An example setup is available in the `kuka_multi_robot_examples` package: [examples/kuka_multi_robot_examples](https://github.com/kuka-ros/examples/tree/master/kuka_multi_robot_examples).
-
-The robot hardware descriptions expose two configurable parameters to control the async execution behavior:
-
-- `async_thread_priority` (default: `69`): sets the thread priority for the asynchronous hardware interface executor thread
-- `async_affinity` (default: `""` - empty, allows any core): pins the asynchronous hardware interface thread to specific CPU cores
-
-To plan with Moveit and a multi-arm setup, the moveit configuration also has to be modified. As here the URDF and SRDF files are not in the moveit support package, using MoveitConfigsBuilder is not recommended, the configuration files have to be loaded manually one by one. It is possible to create new configuration files with the resource names updated, or to remap the existing resource names from the launch files. An example for this second approach (with 2 robot arms) is also available in the `kuka_multi_robot_examples` package.
-
-### Dual-arm timing scenarios
-
-The following timing constraints apply in all cases due to `ros2_control` behavior:
-- Main-thread `read` starts immediately after `write` finishes, so this thread is not idle.
-- Async-thread `read` is called at a fixed rate (defined by the controller manager update rate), so there is an idle period after every `write`.
-- KRCs send motion states every 4 ms, but jitter is possible.
-- `update` runs only on the main thread, but it also updates the async hardware interface.
-
-Note: for simplicity, in cases where it does not affect the outcome, `read` is triggered at the same time for both threads. The same scenarios can be extended to any number of robots, the graphs show a multi-robot scenario to make understanding easier.
-
-Legend:
-- R = hardware interface `read`
-- U = controller `update`
-- W = hardware interface `write`
-- I = thread is idle
-
-**Scenario 1:**
-The async thread receives robot state 2 ms after `read` is triggered.
-Outcome: both robots can be controlled smoothly, and jitter does not affect stability.
-![alt text](resources/dual_arm_timing/scenario1.png)
-
-**Scenario 2:**
-The async thread receives robot state 0.5 ms after `read` is triggered.
-Outcome: both robots can be controlled smoothly, but the system is not jitter-resistant. (This scenario is the jitter-free version of scenarios 3 and 4)
-![alt text](resources/dual_arm_timing/scenario2.png)
-
-**Scenario 3:**
-The async thread receives robot state 0.5 ms after `read` is triggered, and `read` scheduling is delayed for one cycle.
-Issue: the packet arrives while the thread is still idle. `read` is then called afterwards and skips this packet (which also causes a one-tick delay for all subsequent packets and thus terminates the RSI connection).
-Solution: To minimize the detached thread sleep time, the controller manager update rate is set to a high value for multi-robot setup, which eliminates this error. The update rate of the `joint_trajectory_controller` has to be configured specifically to not inherit this high rate. As the blocking read of the main thread still defines the timing, the actual rate will not change.
-![alt text](resources/dual_arm_timing/scenario3.png)
-
-**Scenario 4:**
-The async thread receives robot state 0.5 ms after `read` is triggered. Main-thread `update` starts 0.5 ms after the state is received on the async thread. One packet is 0.7 ms late.
-Issue: the late packet causes an extra `update` execution before `write`. Consequently, one set of commands produced by `update` is never transmitted via `write`. In the subsequent cycle, `write` sends stale data without an intervening `update`, potentially causing a robot jerk. (For example, in case of a simple motion with constant velocity interpolated, the first tick will produce double velocity, while the second a cycle with 0 velocity)
-![alt text](resources/dual_arm_timing/scenario4.png)
-Solution: if `update` has not yet been called since last `write`, delay current `write` with a maximum of 1 ms. This is implemented using the internal interface `interpolation_count`
-
-#### Interpolation count - internal interface
-
-The iiQKA.OS2 driver exposes a `runtime_config/interpolation_count` command interface.
-
-- The `kuka_event_broadcaster` updates it once per controller update cycle (and resets it to avoid overflow)
-- Hardware interfaces use it as a sequencing check before `write()` to detect when controller updates and hardware writes are no longer progressing in the expected order.
-- For async hardware, the drivers tolerate a one-cycle asynchronous lag with a maximum 1 ms retry window, that can fix communication jitter up to 1 ms. If this condition is not met, or it is still unresolved after the retry window, a mismatch warning is reported.
-  - If tick with 0 `update` calls happens first, `write` is delayed so that `update` can be still called
-  - If tick with 2 `update` calls happens first, one `update` result will be lost, but all consequent ticks will wait for a new value
-
+Asynchronous hardware interfaces are only supported since ROS 2 jazzy. If you intend to run a multi-robot setup, switch to the jazzy distribution. 
 
 ## Detailed setup and startup instructions
 
