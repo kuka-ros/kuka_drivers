@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cmath>
-#include <exception>
+#include <chrono>
 
 #include "pluginlib/class_list_macros.hpp"
 
@@ -23,46 +22,12 @@
 namespace kuka_controllers
 {
 
-CallbackReturn KssMessageHandler::on_init()
-{
-  try
-  {
-    auto param_listener = std::make_shared<ParamListener>(get_node());
-    params_ = param_listener->get_params();
-  }
-  catch (const std::exception & ex)
-  {
-    RCLCPP_ERROR(get_node()->get_logger(), "Failed to initialize parameters: %s", ex.what());
-    return CallbackReturn::ERROR;
-  }
-  return CallbackReturn::SUCCESS;
-}
-
-std::string KssMessageHandler::ComposeInterfaceName(
-  const std::string & robot_prefix, const std::string & interface_group,
-  const std::string & interface_name)
-{
-  if (robot_prefix.empty())
-  {
-    return interface_group + "/" + interface_name;
-  }
-  else
-  {
-    return robot_prefix + "_" + interface_group + "/" + interface_name;
-  }
-}
-
 InterfaceConfig KssMessageHandler::command_interface_configuration() const
 {
   InterfaceConfig config;
   config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-
-  for (const auto & robot_prefix : params_.robot_prefixes)
-  {
-    config.names.emplace_back(ComposeInterfaceName(
-      robot_prefix, hardware_interface::CONFIG_PREFIX, hardware_interface::CYCLE_TIME));
-  }
-
+  config.names.emplace_back(
+    std::string{hardware_interface::CONFIG_PREFIX} + "/" + hardware_interface::CYCLE_TIME);
   return config;
 }
 
@@ -71,13 +36,16 @@ InterfaceConfig KssMessageHandler::state_interface_configuration() const
   InterfaceConfig config;
   config.type = controller_interface::interface_configuration_type::INDIVIDUAL;
 
-  for (const auto & robot_prefix : params_.robot_prefixes)
+  const std::vector<std::string> state_interfaces = {
+    hardware_interface::CONTROL_MODE,    hardware_interface::CYCLE_TIME,
+    hardware_interface::DRIVES_POWERED,  hardware_interface::EMERGENCY_STOP,
+    hardware_interface::GUARD_STOP,      hardware_interface::IN_MOTION,
+    hardware_interface::MOTION_POSSIBLE, hardware_interface::OPERATION_MODE,
+    hardware_interface::ROBOT_STOPPED};
+
+  for (const auto & interface : state_interfaces)
   {
-    for (const auto * interface : STATE_INTERFACE_NAMES)
-    {
-      config.names.emplace_back(
-        ComposeInterfaceName(robot_prefix, hardware_interface::STATE_PREFIX, interface));
-    }
+    config.names.emplace_back(std::string{hardware_interface::STATE_PREFIX} + "/" + interface);
   }
 
   return config;
@@ -85,74 +53,40 @@ InterfaceConfig KssMessageHandler::state_interface_configuration() const
 
 CallbackReturn KssMessageHandler::on_configure(const rclcpp_lifecycle::State &)
 {
-  if (params_.robot_prefixes.empty())
-  {
-    RCLCPP_ERROR(get_node()->get_logger(), "Parameter 'robot_prefixes' must not be empty");
-    return CallbackReturn::ERROR;
-  }
-
-  robot_prefixes_ = params_.robot_prefixes;
-  current_statuses_.assign(robot_prefixes_.size(), kuka_driver_interfaces::msg::KssStatus{});
-
-  status_msg_.robot_names = robot_prefixes_;
-  status_msg_.statuses = current_statuses_;
-  status_publish_counter_ = 0;
-
   // RSI cycle time: default to 4ms, as 12 ms is not supported for iiQKA.OS2
   cycle_time_.store(static_cast<double>(kuka_driver_interfaces::msg::KssStatus::RSI_4MS));
   cycle_time_subscription_ = get_node()->create_subscription<std_msgs::msg::UInt8>(
     "~/cycle_time", rclcpp::SystemDefaultsQoS(),
     std::bind(&KssMessageHandler::RsiCycleTimeChangedCallback, this, std::placeholders::_1));
 
-  // Status publisher for all robots. One message contains all robot statuses.
-  auto status_publisher = get_node()->create_publisher<kuka_driver_interfaces::msg::KssStatusArray>(
+  // Status
+  auto status_publisher = get_node()->create_publisher<kuka_driver_interfaces::msg::KssStatus>(
     "~/status", rclcpp::SystemDefaultsQoS());
   status_publisher_ = std::make_shared<
-    realtime_tools::RealtimePublisher<kuka_driver_interfaces::msg::KssStatusArray>>(
+    realtime_tools::RealtimePublisher<kuka_driver_interfaces::msg::KssStatus>>(
     status_publisher);
+  timer_ = get_node()->create_wall_timer(
+    STATUS_PUBLISH_INTERVAL,
+    [this]
+    {
+      status_.UpdateMessage();
+      if (status_publisher_->trylock())
+      {
+        status_publisher_->msg_ = status_.GetMessage();
+        status_publisher_->unlockAndPublish();
+      }
+    });
 
-  RCLCPP_INFO(
-    get_node()->get_logger(),
-    "KSS message handler configured with %zu robot instance(s); cycle_time command topic is shared",
-    robot_prefixes_.size());
+  RCLCPP_INFO(get_node()->get_logger(), "KSS message handler configured");
   return CallbackReturn::SUCCESS;
 }
 
 ReturnType KssMessageHandler::update(const rclcpp::Time &, const rclcpp::Duration &)
 {
-  const double cycle_time = cycle_time_.load();
-  bool all_cycle_time_set = true;
+  command_interfaces_[0].set_value(cycle_time_.load());
 
-  for (size_t idx = 0; idx < command_interfaces_.size(); ++idx)
-  {
-    const bool cycle_time_set = command_interfaces_[idx].set_value(cycle_time);
-    all_cycle_time_set = all_cycle_time_set && cycle_time_set;
-    if (!cycle_time_set)
-    {
-      RCLCPP_WARN_THROTTLE(
-        get_node()->get_logger(), *get_node()->get_clock(), WARN_THROTTLE_DURATION_MS,
-        "Failed to set cycle time command interface for robot '%s'", robot_prefixes_[idx].c_str());
-    }
-  }
-
-  for (size_t idx = 0; idx < current_statuses_.size(); ++idx)
-  {
-    AssignStatusFromInterfaces(
-      current_statuses_[idx], state_interfaces_, idx * STATE_INTERFACE_COUNT);
-  }
-
-  if (++status_publish_counter_ >= STATUS_PUBLISH_TICK_COUNT)
-  {
-    if (status_publisher_->trylock())
-    {
-      status_msg_.statuses = current_statuses_;
-      status_publisher_->msg_ = status_msg_;
-      status_publisher_->unlockAndPublish();
-    }
-    status_publish_counter_ = 0;
-  }
-
-  return all_cycle_time_set ? ReturnType::OK : ReturnType::ERROR;
+  status_ = state_interfaces_;
+  return ReturnType::OK;
 }
 
 void KssMessageHandler::RsiCycleTimeChangedCallback(const std_msgs::msg::UInt8::SharedPtr msg)
@@ -162,13 +96,6 @@ void KssMessageHandler::RsiCycleTimeChangedCallback(const std_msgs::msg::UInt8::
     msg->data == kuka_driver_interfaces::msg::KssStatus::RSI_12MS)
   {
     cycle_time_.store(static_cast<double>(msg->data));
-    RCLCPP_INFO(
-      get_node()->get_logger(),
-      "RSI cycle time changed to %s, "
-      "this will be sent to the KUKA controller during activation",
-      msg->data == 2   ? "12 ms"
-      : msg->data == 1 ? "4 ms"
-                       : "UNSPECIFIED");
   }
   else
   {
@@ -177,21 +104,20 @@ void KssMessageHandler::RsiCycleTimeChangedCallback(const std_msgs::msg::UInt8::
   }
 }
 
-void KssMessageHandler::AssignStatusFromInterfaces(
-  kuka_driver_interfaces::msg::KssStatus & status,
-  const std::vector<hardware_interface::LoanedStateInterface> & state_interfaces,
-  const size_t start_idx)
+KssMessageHandler::Status & KssMessageHandler::Status::operator=(
+  const std::vector<hardware_interface::LoanedStateInterface> & state_interfaces)
 {
-  for (const auto & [member, index] : UINT8_STATUS_FIELDS)
+  for (const auto & [value_ptr, idx] : UINT8_MAPPINGS)
   {
-    status.*member =
-      ReadInterfaceValue<uint8_t>(state_interfaces[start_idx + index], status.*member);
+    *value_ptr = static_cast<uint8_t>(state_interfaces[idx].get_value());
   }
 
-  for (const auto & [member, index] : BOOL_STATUS_FIELDS)
+  for (const auto & [value_ptr, idx] : BOOL_MAPPINGS)
   {
-    status.*member = ReadInterfaceValue<bool>(state_interfaces[start_idx + index], status.*member);
+    *value_ptr = static_cast<bool>(state_interfaces[idx].get_value());
   }
+
+  return *this;
 }
 
 }  // namespace kuka_controllers

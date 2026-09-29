@@ -50,11 +50,11 @@ CallbackReturn RobotManagerNodeEkiRsi::on_cleanup(const rclcpp_lifecycle::State 
 }
 
 void RobotManagerNodeEkiRsi::EventSubscriptionCallback(
-  const kuka_driver_interfaces::msg::HardwareEvent::SharedPtr message)
+  const std_msgs::msg::UInt8::SharedPtr message)
 {
   const auto logger = get_logger();
 
-  const auto event = static_cast<kuka_drivers_core::HardwareEvent>(message->event);
+  const auto event = static_cast<kuka_drivers_core::HardwareEvent>(message->data);
   switch (event)
   {
     case kuka_drivers_core::HardwareEvent::CONTROL_STARTED:

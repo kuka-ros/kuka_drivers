@@ -15,7 +15,6 @@
 #ifndef KUKA_RSI_DRIVER__HARDWARE_INTERFACE_RSI_BASE_HPP_
 #define KUKA_RSI_DRIVER__HARDWARE_INTERFACE_RSI_BASE_HPP_
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -52,8 +51,7 @@ public:
   virtual KUKA_RSI_DRIVER_PUBLIC ~KukaRSIHardwareInterfaceBase() = default;
 
   KUKA_RSI_DRIVER_PUBLIC
-  CallbackReturn on_init(
-    const hardware_interface::HardwareComponentInterfaceParams & params) override;
+  CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override;
 
   KUKA_RSI_DRIVER_PUBLIC
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
@@ -143,7 +141,6 @@ protected:
     std::vector<int> gpio_states_to_commands_map;
     bool is_active = false;
     bool msg_received = false;
-    bool is_async_hardware = false;
   };
 
   struct DiagnosticsState
@@ -151,8 +148,6 @@ protected:
     std::chrono::steady_clock::time_point last_msg_received_time{};
     uint64_t packet_loss_count = 0;
     uint64_t last_ipoc = 0;
-    uint32_t last_interpolation_count_command = 0;
-    bool interpolation_count_initialized = false;
   };
 
   struct ControlState
@@ -160,7 +155,6 @@ protected:
     StatusManager status_manager;
     double hw_control_mode_command = 0.0;
     double cycle_time_command = 0.0;
-    double interpolation_count_command = 0.0;
     kuka_drivers_core::ControlMode prev_control_mode =
       kuka_drivers_core::ControlMode::CONTROL_MODE_UNSPECIFIED;
     RsiCycleTime prev_cycle_time = RsiCycleTime::RSI_4MS;
@@ -190,9 +184,6 @@ protected:
 
   // threshold for logging slow RSI responses
   static constexpr std::chrono::milliseconds kWarningThreshold{2};
-
-  // Interface prefix for state and command interfaces, enabling multi-robot support
-  std::string interface_prefix_;
 
 private:
   KUKA_RSI_DRIVER_LOCAL void ConfigureJoints(

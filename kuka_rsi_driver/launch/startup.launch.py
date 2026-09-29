@@ -309,7 +309,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         parameters=[
             driver_config,
-            {"robot_models": [effective_robot_model], "use_gpio": use_gpio},
+            {"robot_model": effective_robot_model, "use_gpio": use_gpio},
         ],
         prefix=prefix_cmd,
     )
@@ -323,9 +323,9 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # Spawn controllers
-    def controller_spawner(controller_name, prefix_cmd, param_file=None, activate=False):
+    def controller_spawner(controllers, prefix_cmd, param_file=None, activate=False):
         arg_list = [
-            controller_name,
+            controllers,
             "-c",
             "controller_manager",
             "-n",
@@ -349,15 +349,14 @@ def launch_setup(context, *args, **kwargs):
     controllers = {
         "joint_state_broadcaster": None,
         "joint_trajectory_controller": config_file(jtc_config_param),
-        "event_broadcaster": config_file("kuka_event_broadcaster_config.yaml"),
+        "event_broadcaster": None,
     }
 
     if use_gpio:
-        controllers["gpio_controller"] = config_file("gpio_controller_config.yaml")
+        controllers.update({"gpio_controller": config_file("gpio_controller_config.yaml")})
 
     if driver_version.perform(context) in {"eki_rsi", "mxa_rsi"}:
-        controllers["control_mode_handler"] = config_file("kuka_control_mode_handler_config.yaml")
-        controllers["kss_message_handler"] = config_file("kuka_kss_message_handler_config.yaml")
+        controllers.update({"control_mode_handler": None, "kss_message_handler": None})
 
     controller_spawners = [
         controller_spawner(name, prefix_cmd, param_file)
@@ -468,7 +467,6 @@ def generate_launch_description():
             ),
         )
     )
-    launch_arguments.append(DeclareLaunchArgument("controller_config", default_value=""))
     launch_arguments.append(
         DeclareLaunchArgument(
             "controller_config_dir",

@@ -27,10 +27,9 @@
 namespace kuka_rsi_driver
 {
 
-CallbackReturn KukaMxaRsiHardwareInterface::on_init(
-  const hardware_interface::HardwareComponentInterfaceParams & params)
+CallbackReturn KukaMxaRsiHardwareInterface::on_init(const hardware_interface::HardwareInfo & info)
 {
-  if (KukaRSIHardwareInterfaceBase::on_init(params) != CallbackReturn::SUCCESS)
+  if (KukaRSIHardwareInterfaceBase::on_init(info) != CallbackReturn::SUCCESS)
   {
     return CallbackReturn::ERROR;
   }
@@ -56,11 +55,11 @@ KukaMxaRsiHardwareInterface::export_command_interfaces()
   command_interfaces = KukaRSIHardwareInterfaceBase::export_command_interfaces();
 
   command_interfaces.emplace_back(
-    interface_prefix_ + hardware_interface::CONFIG_PREFIX, hardware_interface::CONTROL_MODE,
+    hardware_interface::CONFIG_PREFIX, hardware_interface::CONTROL_MODE,
     &control_state_.hw_control_mode_command);
 
   command_interfaces.emplace_back(
-    interface_prefix_ + hardware_interface::CONFIG_PREFIX, hardware_interface::CYCLE_TIME,
+    hardware_interface::CONFIG_PREFIX, hardware_interface::CYCLE_TIME,
     &control_state_.cycle_time_command);
 
   return command_interfaces;
@@ -73,7 +72,7 @@ KukaMxaRsiHardwareInterface::export_state_interfaces()
 
   state_interfaces = KukaRSIHardwareInterfaceBase::export_state_interfaces();
 
-  control_state_.status_manager.RegisterStateInterfaces(state_interfaces, interface_prefix_);
+  control_state_.status_manager.RegisterStateInterfaces(state_interfaces);
 
   return state_interfaces;
 }
@@ -195,7 +194,7 @@ void KukaMxaRsiHardwareInterface::Read(const int64_t request_timeout)
   }
   else if (
     !control_state_.status_manager.IsMotionPossible() &&
-    this->get_lifecycle_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE)
+    this->lifecycle_state_.id() == lifecycle_msgs::msg::State::PRIMARY_STATE_ACTIVE)
   {
     RCLCPP_ERROR(logger_, "Motion is not possible");
     set_server_event(kuka_drivers_core::HardwareEvent::ERROR);

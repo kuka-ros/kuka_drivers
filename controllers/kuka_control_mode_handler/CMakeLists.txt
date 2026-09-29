@@ -9,15 +9,8 @@ find_package(ament_cmake REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(kuka_drivers_core REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(generate_parameter_library REQUIRED)
 
 include_directories(include)
-
-generate_parameter_library(
-  kuka_control_mode_handler_parameters
-  src/kuka_control_mode_handler_parameters.yaml
-)
 
 add_library(${PROJECT_NAME} SHARED
   src/kuka_control_mode_handler.cpp)
@@ -28,7 +21,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 ament_target_dependencies(${PROJECT_NAME} controller_interface std_msgs kuka_drivers_core
 )
-target_link_libraries(${PROJECT_NAME} kuka_control_mode_handler_parameters)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
@@ -38,8 +30,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNC
 
 pluginlib_export_plugin_description_file(controller_interface controller_plugins.xml)
 
-install(TARGETS ${PROJECT_NAME} kuka_control_mode_handler_parameters
-  EXPORT export_${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -59,8 +50,6 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
-
-ament_export_targets(export_${PROJECT_NAME})
 
 ament_export_include_directories(
   include

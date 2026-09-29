@@ -16,12 +16,6 @@ find_package(std_msgs REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(kuka_drivers_core REQUIRED)
 find_package(kuka_driver_interfaces REQUIRED)
-find_package(generate_parameter_library REQUIRED)
-
-generate_parameter_library(
-  kuka_kss_message_handler_parameters
-  src/kuka_kss_message_handler_parameters.yaml
-)
 
 add_library(kuka_kss_message_handler SHARED src/kuka_kss_message_handler.cpp)
 add_library(kuka_kss_message_handler::kuka_kss_message_handler ALIAS kuka_kss_message_handler)
@@ -40,7 +34,6 @@ ament_target_dependencies(
   kuka_drivers_core
   kuka_driver_interfaces
 )
-target_link_libraries(kuka_kss_message_handler kuka_kss_message_handler_parameters)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
@@ -51,7 +44,7 @@ install(
   DESTINATION include/${PROJECT_NAME}
 )
 install(
-  TARGETS kuka_kss_message_handler kuka_kss_message_handler_parameters
+  TARGETS kuka_kss_message_handler
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
