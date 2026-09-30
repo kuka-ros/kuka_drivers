@@ -2,8 +2,10 @@ name: SonarQube
 on:
   push:
     branches:
-      - master
+      - humble
   pull_request:
+    branches:
+      - humble
     types: [opened, synchronize, reopened]
 jobs:
   build:
