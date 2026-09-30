@@ -74,12 +74,12 @@ class TestDriverActivation(unittest.TestCase):
         # Check for successful initialization
         proc_output.assertWaitFor("got segment base", timeout=5)
         proc_output.assertWaitFor(
-            "Successful initialization of hardware 'kr6_r700_sixx'", timeout=5
+            "Successful initialization of hardware 'kr6_r700_2'", timeout=5
         )
         # Check whether disabling automatic activation was successful
         proc_output.assertWaitFor(
-            "Setting component 'kr6_r700_sixx' to 'unconfigured' state.", timeout=5
+            "Setting component 'kr6_r700_2' to 'unconfigured' state.", timeout=5
         )
         # Check for successful configuration and activation
-        proc_output.assertWaitFor("Successful 'configure' of hardware 'kr6_r700_sixx'", timeout=25)
-        proc_output.assertWaitFor("Successful 'activate' of hardware 'kr6_r700_sixx'", timeout=30)
+        proc_output.assertWaitFor("Successful 'configure' of hardware 'kr6_r700_2'", timeout=25)
+        proc_output.assertWaitFor("Successful 'activate' of hardware 'kr6_r700_2'", timeout=30)
