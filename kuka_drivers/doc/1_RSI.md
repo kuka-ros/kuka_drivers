@@ -1,6 +1,6 @@
 # iiQKA.OS2 drivers (RSI)
 
-This guide provides instructions for setting up and using the RSI-based ROS 2 driver for KUKA robots running and **iiQKA.OS2**.
+This guide provides instructions for setting up and using the RSI-based ROS 2 driver for KUKA robots running **iiQKA.OS2**.
 
 The driver supports three configurations for iiQKA.OS2:
 
@@ -12,7 +12,7 @@ The integration of EKI and mxA not only helps the initiation of external control
 
 ## Test setups
 
-The following tables contain the exact versions used for testing the driver.
+The following table contains the exact versions used for testing the driver.
 
 
 ### iiQKA.OS2 tested configurations
@@ -26,7 +26,7 @@ The following tables contain the exact versions used for testing the driver.
 
 ## Client-side setup
 
-It is recommended to run the driver on a real-time capable client machine. Detailed instructions for setting up the `PREEMPT_RT` path are available on the [Realtime](./3_Realtime.md) wiki page.
+It is recommended to run the driver on a real-time capable client machine. Detailed instructions for setting up the `PREEMPT_RT` patch are available on the [Realtime](./3_Realtime.md) wiki page.
 
 To be able to connect to RSI running on the controller, a fixed IP in the subnet of the RSI interface is required on the Linux machine.
 
@@ -62,7 +62,7 @@ The parameters in the driver configuration file can be changed during runtime us
 
 ### I/O configuration
 
-iiQKA.OS2 support inputs and outputs for real-time usage through RSI. The I/Os are defined from the robot controller's point of view: an `input` can only have state interfaces in ROS Control, while an `output` can have both state and command interfaces.
+iiQKA.OS2 supports inputs and outputs for real-time usage through RSI. The I/Os are defined from the robot controller's point of view: an `input` can only have state interfaces in ROS Control, while an `output` can have both state and command interfaces.
 
 RSI groups the I/Os into three categories:
 
@@ -291,7 +291,7 @@ Both launch files support the following arguments:
 - `namespace`: adds a namespace to all nodes and controllers of the driver, and modifies the `prefix` argument of the robot description macro to `namespace_`
 - `x`, `y`, `z`: define the position of `base_link` relative to the `world` frame in meters (default: [0, 0, 0])
 - `roll`, `pitch`, `yaw`: define the orientation of `base_link` relative to the `world` frame in radians (default: [0, 0, 0])
-- `roundtrip_time`: The roundtrip time (in microseconds) to be enforced by the [KUKA mock hardware interface](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#custom-mock-hardware), (defaults to 4000 us, only used if `mode` is set to 'mock')
+- `roundtrip_time`: The roundtrip time (in microseconds) to be enforced by the [KUKA mock hardware interface](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#custom-mock-hardware) (defaults to 4000 us, only used if `mode` is set to 'mock')
 - `controller_config_dir`: the directory that contains all controller configuration files (defaults to `kuka_rsi_driver/config`). The driver expects the following file names in this directory:
   - `ros2_controller_config_rsi_only.yaml` (used when `driver_version:=rsi_only`)
   - `ros2_controller_config_extended.yaml` (used when `driver_version:=eki_rsi` or `driver_version:=mxa_rsi`)
@@ -318,7 +318,7 @@ Both launch files support the following arguments:
 - `enable_rsi_monitoring`: If set to `true`, starts an additional non-invasive UDP port monitor node that passively monitors RSI communication and reports communication statistics when the driver is stopped (defaults to `false`).
 
 > [!NOTE]
-> The `rt_core` and `rt_prio`, parameters are not applied to asynchronous hardware interfaces. For async hardware configuration, use the `async_thread_priority` and `async_affinity` xacro arguments instead.
+> The `rt_core` and `rt_prio` parameters are not applied to asynchronous hardware interfaces. For async hardware configuration, use the `async_thread_priority` and `async_affinity` xacro arguments instead.
 
 The `startup_with_rviz.launch.py` additionally contains one argument:
 
@@ -335,8 +335,8 @@ It is also possible to start a dual-arm setup with a single launch file:
 ros2 launch kuka_rsi_driver dual_arm_startup.launch.py
 ```
 
-The driver has to be configured and activated the same way, as for a single arm.
-The same launch arguments are also available for this, the names prefixed with `robot1_` and  `robot2_` (e.g. `robot1_family`).
+The driver has to be configured and activated the same way as for a single arm.
+The same launch arguments are available with names prefixed by `robot1_` and `robot2_` (e.g. `robot1_family`).
 
 ### Stopping external control
 
