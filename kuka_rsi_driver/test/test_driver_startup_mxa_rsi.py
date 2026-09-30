@@ -53,9 +53,9 @@ class TestDriverStartup(unittest.TestCase):
         # Check for successful initialization
         proc_output.assertWaitFor("Robot initialized", timeout=5)
         proc_output.assertWaitFor(
-            "Successful initialization of hardware 'kr6_r700_sixx'", timeout=5
+            "Successful initialization of hardware 'kr6_r700_2'", timeout=5
         )
         # Check whether disabling automatic activation was successful
         proc_output.assertWaitFor(
-            "Setting component 'kr6_r700_sixx' to 'unconfigured' state.", timeout=5
+            "Setting component 'kr6_r700_2' to 'unconfigured' state.", timeout=5
         )
