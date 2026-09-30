@@ -12,7 +12,7 @@ The integration of EKI and mxA not only helps the initiation of external control
 
 ## Test setups
 
-The following tables contain the exact versions used for testing the driver.
+The following table contains the exact versions used for testing the driver.
 
 
 ### iiQKA.OS2 tested configurations
