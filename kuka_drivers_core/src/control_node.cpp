@@ -15,7 +15,9 @@
 #include <sys/mman.h>
 
 #include <memory>
+#include <string>
 #include <thread>
+#include <vector>
 
 #include "controller_manager/controller_manager.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -25,8 +27,21 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
-  auto controller_manager =
-    std::make_shared<controller_manager::ControllerManager>(executor, "controller_manager");
+
+  rclcpp::NodeOptions cm_node_options = controller_manager::get_cm_node_options();
+  std::vector<std::string> node_arguments = cm_node_options.arguments();
+  for (int i = 1; i < argc; ++i)
+  {
+    if (node_arguments.empty() && std::string(argv[i]) != "--ros-args")
+    {
+      continue;
+    }
+    node_arguments.push_back(argv[i]);
+  }
+  cm_node_options.arguments(node_arguments);
+
+  auto controller_manager = std::make_shared<controller_manager::ControllerManager>(
+    executor, "controller_manager", "", cm_node_options);
 
   auto qos = rclcpp::QoS(rclcpp::KeepLast(1));
   qos.best_effort();
