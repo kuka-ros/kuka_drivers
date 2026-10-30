@@ -51,15 +51,8 @@ def generate_test_description():
 class TestDriverStartup(unittest.TestCase):
     def test_read_stdout(self, proc_output):
         # Check for successful initialization
-<<<<<<< HEAD
         proc_output.assertWaitFor("got segment base", timeout=5)
-        proc_output.assertWaitFor(
-            "Successful initialization of hardware 'kr6_r700_2'", timeout=5
-        )
-=======
-        proc_output.assertWaitFor("Robot initialized", timeout=5)
         proc_output.assertWaitFor("Successful initialization of hardware 'kr6_r700_2'", timeout=5)
->>>>>>> dc68f16 (Fix readme links (#11))
         # Check whether disabling automatic activation was successful
         proc_output.assertWaitFor(
             "Setting component 'kr6_r700_2' to 'unconfigured' state.", timeout=5

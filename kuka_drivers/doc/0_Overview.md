@@ -70,7 +70,7 @@ to start external control for an iiQKA.OS2 robot:
 
 ### Control mode definitions
 
-The control mode specifications are also part of the common API. They are defined as an enum in the [`kuka_drivers_core`](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/include/kuka_drivers_core/control_mode.hpp) package, and have the following meaning:
+The control mode specifications are also part of the common API. They are defined as an enum in the [`kuka_drivers_core`](https://github.com/kuka-ros/kuka_drivers/blob/humble/kuka_drivers_core/include/kuka_drivers_core/control_mode.hpp) package, and have the following meaning:
 
 - joint position control: the driver streams cyclic position updates for every joint.
   - Needed command interface(s): `position`
@@ -153,7 +153,7 @@ open_loop_control: true
 
 ## Multi-robot scenario
 
-Asynchronous hardware interfaces are only supported since ROS 2 jazzy. If you intend to run a multi-robot setup, switch to the jazzy distribution. 
+Asynchronous hardware interfaces are only supported since ROS 2 jazzy. If you intend to run a multi-robot setup, switch to the jazzy distribution.
 
 ## Detailed setup and startup instructions
 
