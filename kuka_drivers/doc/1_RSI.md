@@ -359,7 +359,7 @@ ros2 lifecycle set robot_manager activate
 
 ## External axes configuration
 
-iiQKA.OS2 and the RSI option package support adding external axes to the robot. The [external-axis documentation](https://github.com/kuka-ros/kuka_robot_descriptions/blob/humble/README.md#external-axis-support) describes how to compose a robot with a linear axis.
+Both iiQKA.OS2 and the RSI option package support adding external axes to the robot. The controller-side configuration for a single linear axis is provided in the [RSI context](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_iiqka2/krc_setup/iiqka_os2/Config/RobotSensorInterface/Context/rsi_ext_axis_example.rsix) and [Ethernet configuration](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_iiqka2/krc_setup/iiqka_os2/Config/RobotSensorInterface/Ethernet%20configuration/rsi_ext_axis_ethernet.xml). The [external-axis documentation](https://github.com/kuka-ros/kuka_robot_descriptions/blob/humble/README.md#external-axis-support) describes client-side robot composition.
 
 ### Controller-side configuration
 
