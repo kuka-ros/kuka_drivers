@@ -285,7 +285,11 @@ Both launch files support the following arguments:
 - `client_port`: port of the client machine (default: 59152)
 - `controller_ip`: The IP address of the KUKA Line Interface (KLI) - not used for `rsi_only` setup
 - `mxa_client_port`: port of the client machine where mxAutomation packets are received (default: 1337)
+<<<<<<< HEAD
 - `robot_model` and `robot_family`: defines which robot to use. The available options for the valid model and family combinations can be found in the [README](https://github.com/kuka-ros/kuka_robot_descriptions/blob/humble/README.md#what-is-verified) of the `kuka_robot_descriptions` repository.
+=======
+- `robot_model` and `robot_family`: defines which robot to use. The available options for the valid model and family combinations can be found in the [readme](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#what-is-verified) of the `kuka_robot_descriptions` repository.
+>>>>>>> dc68f16 (Fix readme links (#11))
 - `mode`: if set to 'mock', the `KukaMockHardwareInterface` will be used instead of the `KukaRSIHardwareInterface`. This enables trying out the driver without actual hardware.
 - `gpio_config`: path to a GPIO xacro file defining a `gpio_config` macro (for example, `$(find kuka_rsi_driver)/config/gpio_config.xacro`). Empty by default, which disables GPIO interfaces and the GPIO controller.
 - `namespace`: adds a namespace to all nodes and controllers of the driver, and modifies the `prefix` argument of the robot description macro to `namespace_`
@@ -359,7 +363,11 @@ ros2 lifecycle set robot_manager activate
 
 ## External axes configuration
 
+<<<<<<< HEAD
 iiQKA.OS2 and the RSI option package support adding external axes to the robot. The [external-axis documentation](https://github.com/kuka-ros/kuka_robot_descriptions/blob/humble/README.md#external-axis-support) describes how to compose a robot with a linear axis.
+=======
+Both iiQKA.OS2 and the RSI option package support adding external axes to the robot. The controller-side configuration for a single linear axis is provided in the [RSI context](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_iiqka2/krc_setup/iiqka_os2/Config/RobotSensorInterface/Context/rsi_ext_axis_example.rsix) and [Ethernet configuration](https://github.com/kuka-ros/kuka_external_control_sdk/blob/master/kuka_external_control_sdk_iiqka2/krc_setup/iiqka_os2/Config/RobotSensorInterface/Ethernet%20configuration/rsi_ext_axis_ethernet.xml). This example, together with the structure and documentation, should help users implement their own external-axis configurations.
+>>>>>>> dc68f16 (Fix readme links (#11))
 
 ### Controller-side configuration
 
