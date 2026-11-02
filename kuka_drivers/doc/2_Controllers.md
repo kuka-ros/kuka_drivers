@@ -56,7 +56,7 @@ Hardware interfaces do not support parameters that can be changed in runtime. To
 ### 3.1. `kuka_control_mode_handler`
 
 The `ControlModeHandler` can update the `control_mode` command interface of a hardware. It listens on the `~/control_mode` topic and makes control mode changes possible without having to reactivate the driver.
-The control mode is [defined as an enum](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/include/kuka_drivers_core/control_mode.hpp) in the `kuka_drivers_core` package. The topic type is `std_msgs::msg::UInt32`, and the controller writes the selected value to the `runtime_config/control_mode` command interface.
+The control mode is [defined as an enum](https://github.com/kuka-ros/kuka_drivers/blob/humble/kuka_drivers_core/include/kuka_drivers_core/control_mode.hpp) in the `kuka_drivers_core` package. The topic type is `std_msgs::msg::UInt32`, and the controller writes the selected value to the `runtime_config/control_mode` command interface.
 
 __Required Parameters__: None
 
