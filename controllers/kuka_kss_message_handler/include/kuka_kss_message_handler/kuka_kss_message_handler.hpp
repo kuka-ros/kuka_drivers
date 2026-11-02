@@ -113,8 +113,7 @@ private:
       std::pair<bool *, size_t>{&status_message_.robot_stopped, 8}};
   };
 
-  std::shared_ptr<
-    realtime_tools::RealtimePublisher<kuka_driver_interfaces::msg::KssStatus>>
+  std::shared_ptr<realtime_tools::RealtimePublisher<kuka_driver_interfaces::msg::KssStatus>>
     status_publisher_;
   rclcpp::TimerBase::SharedPtr timer_;
   Status status_;

@@ -62,9 +62,9 @@ CallbackReturn KssMessageHandler::on_configure(const rclcpp_lifecycle::State &)
   // Status
   auto status_publisher = get_node()->create_publisher<kuka_driver_interfaces::msg::KssStatus>(
     "~/status", rclcpp::SystemDefaultsQoS());
-  status_publisher_ = std::make_shared<
-    realtime_tools::RealtimePublisher<kuka_driver_interfaces::msg::KssStatus>>(
-    status_publisher);
+  status_publisher_ =
+    std::make_shared<realtime_tools::RealtimePublisher<kuka_driver_interfaces::msg::KssStatus>>(
+      status_publisher);
   timer_ = get_node()->create_wall_timer(
     STATUS_PUBLISH_INTERVAL,
     [this]
