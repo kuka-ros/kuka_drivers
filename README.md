@@ -1,6 +1,6 @@
 # ROS2 KUKA Drivers
 
-This repository contains ROS2 drivers for all KUKA operating systems.
+This repository contains ROS2 drivers for KUKA robots running iiQKA.OS2.
 
 ROS2 Distro | Branch | Github CI | SonarCloud
 ------------ | -------------- | -------------- | --------------
@@ -13,7 +13,7 @@ The drivers require a system with ROS installed. It is recommended to use Ubuntu
 
 Additionally, there exists a ROS Humble version of the drivers, and its corresponding configuration can be found under the `humble` branch.
 
-It is also recommended to use a client machine with a real-time kernel, as all three drivers require cyclic, real-time communication. Due to the real-time requirement, Windows systems are not recommended and covered in the documentation.
+It is also recommended to use a client machine with a real-time kernel, as the driver requires cyclic, real-time communication. Due to the real-time requirement, Windows systems are not recommended and covered in the documentation.
 
 ## Installation
 
@@ -96,7 +96,7 @@ source ~/ros2_ws/install/setup.bash
 Documentation of this project is available in the package's [`doc`](kuka_drivers/doc) directory:
 
 - [Project overview](kuka_drivers/doc/0_Overview.md)
-- [KSS and iiQKA.OS2 drivers (RSI)](kuka_drivers/doc/1_RSI.md)
+- [iiQKA.OS2 driver (RSI)](kuka_drivers/doc/1_RSI.md)
 - [KUKA-specific controllers](kuka_drivers/doc/2_Controllers.md)
 - [Real-time patch setup](kuka_drivers/doc/3_Realtime.md)
 
