@@ -269,7 +269,6 @@ return_type KukaRSIHardwareInterfaceBase::read(const rclcpp::Time &, const rclcp
   // Add short sleep to avoid RT thread eating CPU
   if (!runtime_state_.is_active)
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(2));
     return return_type::OK;
   }
 
