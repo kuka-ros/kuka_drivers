@@ -22,14 +22,10 @@ The iiQKA.OS2 real-time interface handles timing on the controller side, so
 external control is always synchronized with the internal control cycle. This
 means that calling the `read` method of the `controller_manager` cannot return
 immediately, but has to wait until the controller sends an update, which is
-triggered by the internal clock. Because of this blocking read, the default
-`ros2_control_node` cannot be used, as it is expected to manage the timing
-according to the configured control frequency. Therefore a [custom control
-node](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/src/control_node.cpp)
-was implemented that uses the `controller_manager` and all other tools of
-`ros2_control`, but leaves time management to the robot controller.
-
-This change does not influence the API of the `ros2_control` framework, the real-time dataflow can be accessed by any controller.
+triggered by the internal clock. The default `ros2_control_node` excutable supports this
+blocking read behavior when the
+`hardware_synchronization.expect_blocking_read_write` parameter is set to
+`true`, as it is in the driver's launch files.
 
 ### Non-real-time interface
 
@@ -48,7 +44,7 @@ The last issue should be certainly prevented from happening, therefore it was de
 
 To achieve these synchronized states, the state transitions of the system do the following steps (implemented by the launch file and the `robot_manager` node):
 
-- startup: all components of the system are started: `control_node`, `robot_manager` node, `robot_state_publisher` (optionally `rviz`) and all of the necessary controllers are loaded and configured
+- startup: all components of the system are started: `ros2_control_node`, `robot_manager` node, `robot_state_publisher` (optionally `rviz`) and all of the necessary controllers are loaded and configured
 - `configure`: activate configuration controllers, configure hardware interface
 - `activate`: activate real-time controllers, activate hardware interface
 - `deactivate`: deactivate hardware interface, deactivate real-time controllers
@@ -105,7 +101,7 @@ supported by the driver.)
 The repository contains a few other packages aside from the 3 drivers:
 
 - `kuka_driver_interfaces`: this package contains the custom message definition necessary for KUKA robots.
-- `kuka_drivers_core`: this package contains core functionalities used by more drivers, including the `control_node`, base classes for nodes with improved parameter handling, enum and constant definitions and a class for managing the controller activation and deactivation at control mode changes. Details about these features can be found in the package [documentation](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/README.md)
+- `kuka_drivers_core`: this package contains core functionalities used by more drivers, base classes for nodes with improved parameter handling, enum and constant definitions and a class for managing the controller activation and deactivation at control mode changes. Details about these features can be found in the package [documentation](https://github.com/kuka-ros/kuka_drivers/blob/master/kuka_drivers_core/README.md)
 - `kuka_rsi_simulator`: this package contains a simple simulator of RSI, that implements a UDP server accepting the same xml format as RSI and returning the commanded values as the current state, without any checks.
 
 ## MoveIt integration

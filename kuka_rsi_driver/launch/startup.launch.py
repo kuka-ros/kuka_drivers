@@ -281,10 +281,9 @@ def launch_setup(context, *args, **kwargs):
 
     control_node = Node(
         namespace=ns,
-        package="kuka_drivers_core",
-        executable="control_node",
+        package="controller_manager",
+        executable="ros2_control_node",
         parameters=[
-            robot_description,
             controller_config_file,
             {
                 "cpu_affinity": int(rt_core.perform(context)),
@@ -293,6 +292,7 @@ def launch_setup(context, *args, **kwargs):
                 "hardware_components_initial_state": {
                     "unconfigured": [tf_prefix + effective_robot_model]
                 },
+                "hardware_synchronization.expect_blocking_read_write": True,
             },
         ],
         prefix=prefix_cmd,

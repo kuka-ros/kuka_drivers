@@ -32,10 +32,6 @@ add_library(kuka_drivers_core SHARED
 )
 ament_target_dependencies(kuka_drivers_core rclcpp rclcpp_lifecycle lifecycle_msgs hardware_interface)
 
-add_executable(control_node
-  src/control_node.cpp)
-ament_target_dependencies(control_node rclcpp rclcpp_lifecycle controller_manager)
-
 add_executable(lifecycle_manager
   src/lifecycle_manager.cpp)
 ament_target_dependencies(lifecycle_manager rclcpp lifecycle_msgs)
@@ -73,7 +69,7 @@ install(
   INCLUDES DESTINATION include
 )
 
-install(TARGETS ${PROJECT_NAME} control_node lifecycle_manager
+install(TARGETS ${PROJECT_NAME} lifecycle_manager
   DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)

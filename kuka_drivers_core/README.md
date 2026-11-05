@@ -153,4 +153,3 @@ The `GetControllersForMode()` method returns the controllers needed for the requ
 
 Additionally common type definitions are included for control modes (see the [control mode definitions](../kuka_drivers/doc/0_Overview.md#control-mode-definitions)) and hardware interface types.
 
-The package also contains the [modified `control_node`](../kuka_drivers/doc/0_Overview.md#real-time-interface) that instantiates the `controller_manager` without managing the timing.
