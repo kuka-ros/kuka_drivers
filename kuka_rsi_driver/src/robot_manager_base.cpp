@@ -39,11 +39,6 @@ RobotManagerBase::RobotManagerBase() : kuka_drivers_core::ROS2BaseLCNode("robot_
   change_controller_state_client_ =
     this->create_client<SwitchController>("controller_manager/switch_controller", qos, cbg_);
 
-  auto is_configured_qos = rclcpp::QoS(rclcpp::KeepLast(1));
-  is_configured_qos.best_effort();
-  is_configured_pub_ =
-    this->create_publisher<std_msgs::msg::Bool>("robot_manager/is_configured", is_configured_qos);
-
   // Subscribe to event_broadcaster/hardware_event
   rclcpp::SubscriptionOptions sub_options;
   sub_options.callback_group = event_callback_group_;
@@ -128,10 +123,6 @@ RobotManagerBase::configure_driver(const std::vector<std::string> & controllers_
     return FAILURE;
   }
 
-  is_configured_pub_->on_activate();
-  is_configured_msg_.data = true;
-  is_configured_pub_->publish(is_configured_msg_);
-
   std_msgs::msg::UInt8 msg;
   msg.data = static_cast<uint8_t>(cycle_time_);
   cycle_time_pub_->publish(msg);
@@ -162,12 +153,6 @@ RobotManagerBase::cleanup_driver(const std::vector<std::string> & controllers_to
     }
   }
 
-  if (is_configured_pub_->is_activated())
-  {
-    is_configured_msg_.data = false;
-    is_configured_pub_->publish(is_configured_msg_);
-    is_configured_pub_->on_deactivate();
-  }
   return all_cleaned ? SUCCESS : FAILURE;
 }
 

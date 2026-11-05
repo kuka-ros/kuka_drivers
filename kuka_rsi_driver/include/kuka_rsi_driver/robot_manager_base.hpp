@@ -116,9 +116,6 @@ protected:
 
   std::atomic<bool> terminate_{false};
 
-  std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::Bool>> is_configured_pub_;
-  std_msgs::msg::Bool is_configured_msg_;
-
   rclcpp::CallbackGroup::SharedPtr event_callback_group_;
   rclcpp::Subscription<kuka_driver_interfaces::msg::HardwareEvent>::SharedPtr event_subscriber_;
 
