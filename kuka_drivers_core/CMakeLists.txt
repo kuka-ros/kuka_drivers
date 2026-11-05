@@ -19,7 +19,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
-find_package(controller_manager REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
 find_package(hardware_interface REQUIRED)
 
