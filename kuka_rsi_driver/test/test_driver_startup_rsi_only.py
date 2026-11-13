@@ -50,6 +50,7 @@ def generate_test_description():
                     "robot_xacro_file": os.path.join(
                         get_package_share_directory("kuka_rsi_driver"),
                         "test",
+                        "fixture with spaces",
                         "cell_with_external_base.urdf.xacro",
                     ),
                 }.items(),
@@ -95,9 +96,7 @@ class TestDriverStartup(unittest.TestCase):
             robot = ET.fromstring(robot_descriptions[-1])
             self.assertIsNotNone(robot.find("./link[@name='work_base']"))
             self.assertIsNotNone(
-                robot.find(
-                    "./joint[@name='world-work_base']/child[@link='work_base']"
-                )
+                robot.find("./joint[@name='world-work_base']/child[@link='work_base']")
             )
         finally:
             node.destroy_node()

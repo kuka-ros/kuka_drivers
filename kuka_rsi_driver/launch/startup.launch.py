@@ -14,6 +14,7 @@
 
 
 import os
+import shlex
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -189,7 +190,7 @@ def launch_setup(context, *args, **kwargs):
         effective_robot_model = f"{robot_model_value}_with_{kl_model_value}"
 
     if robot_xacro_file_value:
-        urdf_source = robot_xacro_file_value
+        urdf_source = shlex.quote(robot_xacro_file_value)
 
     jtc_config_param = (
         "joint_trajectory_controller_config_6_axis_kl.yaml"
