@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="cell">
+  <xacro:include filename="$(find kuka_agilus_support)/urdf/kr6_r700_2.urdf.xacro"/>
+  <link name="work_base"/>
+  <joint name="world-work_base" type="fixed">
+    <parent link="world"/>
+    <child link="work_base"/>
+  </joint>
+</robot>

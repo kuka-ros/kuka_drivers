@@ -286,6 +286,7 @@ Both launch files support the following arguments:
 - `controller_ip`: The IP address of the KUKA Line Interface (KLI) - not used for `rsi_only` setup
 - `mxa_client_port`: port of the client machine where mxAutomation packets are received (default: 1337)
 - `robot_model` and `robot_family`: defines which robot to use. The available options for the valid model and family combinations can be found in the [readme](https://github.com/kuka-ros/kuka_robot_descriptions?tab=readme-ov-file#what-is-verified) of the `kuka_robot_descriptions` repository.
+- `robot_xacro_file`: optional absolute path to a custom top-level robot description xacro, for example a cell xacro that adds an external base or tool. It overrides the xacro selected by `robot_model` and `robot_family`; leave it empty (default) to use the standard selection. The custom xacro must provide the robot description and `ros2_control` configuration expected by the selected driver model.
 - `mode`: if set to 'mock', the `KukaMockHardwareInterface` will be used instead of the `KukaRSIHardwareInterface`. This enables trying out the driver without actual hardware.
 - `gpio_config`: path to a GPIO xacro file defining a `gpio_config` macro (for example, `$(find kuka_rsi_driver)/config/gpio_config.xacro`). Empty by default, which disables GPIO interfaces and the GPIO controller.
 - `namespace`: adds a namespace to all nodes and controllers of the driver, and modifies the `prefix` argument of the robot description macro to `namespace_`

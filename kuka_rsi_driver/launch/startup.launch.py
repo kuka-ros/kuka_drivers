@@ -14,6 +14,7 @@
 
 
 import os
+import shlex
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -39,6 +40,7 @@ def _ros2_control_macro_file_from_family(robot_family):
 def launch_setup(context, *args, **kwargs):
     robot_model = LaunchConfiguration("robot_model")
     robot_family = LaunchConfiguration("robot_family")
+    robot_xacro_file = LaunchConfiguration("robot_xacro_file")
     use_external_axis = LaunchConfiguration("use_external_axis")
     kl_model = LaunchConfiguration("kl_model")
     kl_support_package = LaunchConfiguration("kl_support_package")
@@ -96,6 +98,7 @@ def launch_setup(context, *args, **kwargs):
 
     robot_model_value = robot_model.perform(context)
     robot_family_value = robot_family.perform(context)
+    robot_xacro_file_value = robot_xacro_file.perform(context)
     use_external_axis_value = use_external_axis.perform(context) == "true"
     kl_model_value = kl_model.perform(context)
     kl_support_package_value = kl_support_package.perform(context)
@@ -185,6 +188,9 @@ def launch_setup(context, *args, **kwargs):
             kl_ros2_control_joints_macro_value,
         ]
         effective_robot_model = f"{robot_model_value}_with_{kl_model_value}"
+
+    if robot_xacro_file_value:
+        urdf_source = shlex.quote(robot_xacro_file_value)
 
     jtc_config_param = (
         "joint_trajectory_controller_config_6_axis_kl.yaml"
@@ -392,6 +398,16 @@ def generate_launch_description():
     launch_arguments = []
     launch_arguments.append(DeclareLaunchArgument("robot_model", default_value="kr6_r700_2"))
     launch_arguments.append(DeclareLaunchArgument("robot_family", default_value="agilus"))
+    launch_arguments.append(
+        DeclareLaunchArgument(
+            "robot_xacro_file",
+            default_value="",
+            description=(
+                "Absolute path to a top-level robot description xacro. "
+                "When empty, the xacro is selected from robot_model and robot_family."
+            ),
+        )
+    )
     launch_arguments.append(
         DeclareLaunchArgument(
             "use_external_axis",
