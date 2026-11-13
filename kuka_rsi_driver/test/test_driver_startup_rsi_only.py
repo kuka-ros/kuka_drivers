@@ -12,17 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+import time
 import unittest
+import xml.etree.ElementTree as ET
 
 import launch
 import launch_testing.actions
 import launch_testing.markers
 import pytest
+import rclpy
 from ament_index_python.packages import get_package_share_directory
 from launch.actions.include_launch_description import IncludeLaunchDescription
 from launch.launch_description_sources.python_launch_description_source import (
     PythonLaunchDescriptionSource,
 )
+from rclpy.qos import DurabilityPolicy, HistoryPolicy, QoSProfile, ReliabilityPolicy
+from std_msgs.msg import String
 
 
 # Launch all of the robot visualisation launch files one by one
@@ -41,6 +47,11 @@ def generate_test_description():
                 ),
                 launch_arguments={
                     "driver_version": "rsi_only",
+                    "robot_xacro_file": os.path.join(
+                        get_package_share_directory("kuka_rsi_driver"),
+                        "test",
+                        "cell_with_external_base.urdf.xacro",
+                    ),
                 }.items(),
             ),
             launch_testing.actions.ReadyToTest(),
@@ -57,3 +68,37 @@ class TestDriverStartup(unittest.TestCase):
         proc_output.assertWaitFor(
             "Setting component 'kr6_r700_2' to 'unconfigured' state.", timeout=5
         )
+
+    def test_robot_description_contains_external_base(self):
+        robot_descriptions = []
+        qos_profile = QoSProfile(
+            history=HistoryPolicy.KEEP_LAST,
+            depth=1,
+            reliability=ReliabilityPolicy.RELIABLE,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+        )
+
+        rclpy.init()
+        node = rclpy.create_node("test_robot_description")
+        node.create_subscription(
+            String,
+            "/robot_description",
+            lambda message: robot_descriptions.append(message.data),
+            qos_profile,
+        )
+        try:
+            deadline = time.monotonic() + 10
+            while not robot_descriptions and time.monotonic() < deadline:
+                rclpy.spin_once(node, timeout_sec=0.1)
+
+            self.assertTrue(robot_descriptions, "robot_description was not published")
+            robot = ET.fromstring(robot_descriptions[-1])
+            self.assertIsNotNone(robot.find("./link[@name='work_base']"))
+            self.assertIsNotNone(
+                robot.find(
+                    "./joint[@name='world-work_base']/child[@link='work_base']"
+                )
+            )
+        finally:
+            node.destroy_node()
+            rclpy.shutdown()
